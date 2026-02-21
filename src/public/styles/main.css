@@ -1,0 +1,315 @@
+/* ── COLOUR TOKENS ─────────────────────────── */
+:root {
+    /* Backgrounds */
+    --bg: #111010; /* near-black, warm tint */
+    --bg-card: #1a1917; /* card surface */
+    --bg-img: #242220; /* image placeholder */
+
+    /* Borders */
+    --border: rgba(255, 255, 255, 0.07);
+    --border-hover: rgba(255, 255, 255, 0.14);
+
+    /* Text */
+    --text-primary: #ede8e0; /* warm off-white */
+    --text-secondary: #8a847a; /* muted warm grey */
+    --text-muted: #4e4a46; /* very subtle */
+
+    /* Accent — roasted amber */
+    --amber: #c97d3a;
+    --amber-light: #dfa05e;
+    --amber-bg: rgba(201, 125, 58, 0.12);
+
+    /* Roast level pill colours */
+    --roast-light: #7aab8a; /* soft green */
+    --roast-medium: #c4913a; /* amber */
+    --roast-dark: #a05030; /* deep terracotta */
+
+    /* Type */
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Outfit', system-ui, sans-serif;
+    --font-mono: 'DM Mono', 'Courier New', monospace;
+
+    /* Spacing & shape */
+    --radius: 10px;
+    --card-gap: 20px;
+}
+
+/* ── RESET ──────────────────────────────────── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-weight: 300;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ── NAV ────────────────────────────────────── */
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 48px;
+    border-bottom: 1px solid var(--border);
+}
+
+.nav__logo {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--text-primary);
+}
+
+.nav__links {
+    display: flex;
+    gap: 32px;
+}
+
+.nav__links a {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    transition: color 0.15s;
+}
+
+.nav__links a:hover {
+    color: var(--text-primary);
+}
+
+.nav__cart {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+    transition: color 0.15s;
+}
+
+.nav__cart:hover {
+    color: var(--amber-light);
+}
+
+/* ── HERO ───────────────────────────────────── */
+.hero {
+    padding: 80px 48px 64px;
+    border-bottom: 1px solid var(--border);
+}
+
+.hero__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.hero__title {
+    font-family: var(--font-display);
+    font-size: clamp(56px, 7vw, 96px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+}
+
+.hero__title em {
+    font-style: italic;
+    color: var(--amber);
+}
+
+/* ── PRODUCTS ───────────────────────────────── */
+.products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--card-gap);
+    padding: 48px;
+}
+
+/* ── PRODUCT CARD ───────────────────────────── */
+.product-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition:
+        border-color 0.2s,
+        transform 0.2s;
+}
+
+.product-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-3px);
+}
+
+/* Image area — solid colour placeholders for now */
+.product-card__image {
+    height: 200px;
+    background-color: var(--bg-img);
+}
+
+/* Each card gets a slightly different warm tint to distinguish them */
+.product-card__image--1 {
+    background-color: #2a2118;
+}
+.product-card__image--2 {
+    background-color: #1e2018;
+}
+.product-card__image--3 {
+    background-color: #221a14;
+}
+
+.product-card__body {
+    padding: 20px 22px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.product-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.product-card__origin {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* Roast level pill */
+.product-card__roast {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 100px;
+}
+
+/* Colour the pill by roast level */
+.product-card:nth-child(1) .product-card__roast {
+    background: rgba(122, 171, 138, 0.12);
+    color: var(--roast-light);
+}
+.product-card:nth-child(2) .product-card__roast {
+    background: rgba(196, 145, 58, 0.12);
+    color: var(--roast-medium);
+}
+.product-card:nth-child(3) .product-card__roast {
+    background: rgba(160, 80, 48, 0.12);
+    color: var(--roast-dark);
+}
+
+.product-card__name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--text-primary);
+}
+
+.product-card__notes {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-style: italic;
+    letter-spacing: 0.01em;
+}
+
+.product-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.product-card__price {
+    font-family: var(--font-mono);
+    font-size: 17px;
+    color: var(--text-primary);
+    font-weight: 400;
+}
+
+/* ── ADD TO CART BUTTON ─────────────────────── */
+.btn-add {
+    background: transparent;
+    border: 1px solid var(--border-hover);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 400;
+    padding: 7px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition:
+        background 0.18s,
+        border-color 0.18s,
+        color 0.18s;
+}
+
+.btn-add:hover {
+    background: var(--amber-bg);
+    border-color: var(--amber);
+    color: var(--amber-light);
+}
+
+/* ── FOOTER ─────────────────────────────────── */
+.footer {
+    padding: 32px 48px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+}
+
+/* ── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 860px) {
+    .nav {
+        padding: 18px 24px;
+    }
+    .hero {
+        padding: 56px 24px 48px;
+    }
+    .products {
+        grid-template-columns: 1fr;
+        padding: 24px;
+        gap: 16px;
+    }
+    .footer {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 540px) {
+    .nav__links {
+        display: none;
+    }
+    .hero__title {
+        font-size: 48px;
+    }
+}

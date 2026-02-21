@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fourways</title>
+    <link href="/styles/home.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Outfit:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap"
+        rel="stylesheet" />
+</head>
+<script type="module" src="/scripts/home.js"></script>
+</head>
+
+<body>
+
+    <div class="product-cards__container">
+
+
+        <% coffees.forEach(item=> { %>
+            <!-- product card -->
+            <div class="product-card__container" id="product-card__container">
+                <div class="product-card__left">
+                    <p>£10</p>
+                    <button>More Info</button>
+                    <button>Add to cart</button>
+                </div>
+                <div class="product-card__right">
+                    <div class="product-card__text-container">
+                        <div class="product-card__origin" id="product-card__origin">
+                            <p id="product-card__origin-text">
+                                <%= item.origin %>
+                            </p>
+                        </div>
+                        <div class="product-card__process" id="product-card__process">
+                            <p id="product-card__process-text">
+                                <%= item.process %>
+                            </p>
+                        </div>
+                        <div class="product-card__producer" id="product-card__producer">
+                            <p id="product-card__producer-text">
+                                <%= item.producer %>
+                            </p>
+                        </div>
+                        <div class="product-card__variety" id="product-card__variety">
+                            <p id="product-card__variety-text">
+                                <%= item.variety %>
+                            </p>
+                        </div>
+
+                    </div>
+                    <div class="product-card__logo-container">
+                        <div class="product-card__logo"></div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            <% }) %>
+    </div>
+
+
+
+</body>
+<script defer>
+
+    const productCards = Array.from(document.getElementsByClassName('product-card__right'))
+    productCards.forEach(card => {
+        const textContainer = card.children[0]
+        const text = Array.from(textContainer.children)
+        text.forEach(element => {
+            const isOriginText = element.classList.contains('product-card__origin')
+            const splitText = Array.from(element.textContent.trim().split(''))
+            element.textContent = ''
+            splitText.map(char => {
+                const span = document.createElement('span')
+                span.textContent = isOriginText ? char.toUpperCase() : char
+                element.appendChild(span)
+            })
+
+        })
+    })
+
+
+
+</script>
+
+</html>

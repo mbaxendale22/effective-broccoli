@@ -1,0 +1,22 @@
+<h1>Your Cart ☕</h1>
+
+<% if (items.length===0) { %>
+    <p>Your cart is empty.</p>
+    <% } else { %>
+        <ul>
+            <% items.forEach(item=> { %>
+                <li>
+                    <%= item.name %> —
+                        Qty: <%= item.quantity %> —
+                            $<%= (item.lineTotal / 100).toFixed(2) %>
+                </li>
+                <% }) %>
+        </ul>
+
+        <h3>Total: £<%= (total / 100).toFixed(2) %>
+        </h3>
+
+        <% } %>
+            <form action="/create-checkout-session" method="POST">
+                <button type="submit">Checkout</button>
+            </form>

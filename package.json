@@ -1,0 +1,25 @@
+{
+    "name": "fourways_online_storefront",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "@supabase/supabase-js": "^2.97.0",
+        "body-parser": "^2.2.2",
+        "dotenv": "^17.3.1",
+        "ejs": "^4.0.1",
+        "eslint": "^10.0.1",
+        "express": "^5.2.1",
+        "express-rate-limit": "^8.2.1",
+        "express-session": "^1.19.0",
+        "nodemon": "^3.1.13",
+        "stripe": "^20.3.1"
+    },
+    "type": "module"
+}
