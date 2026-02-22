@@ -13,9 +13,11 @@ export const createCheckoutSession = async (req, res) => {
     const { data: coffees } = await supabase
         .from('coffees')
         .select('*')
-        .in('id', coffeeIds)
+        .in('stripe_price_id', coffeeIds)
     const line_items = cart.map((cartItem) => {
-        const coffee = coffees.find((c) => c.id === cartItem.coffeeId)
+        const coffee = coffees.find(
+            (c) => c.stripe_price_id === cartItem.coffeeId
+        )
 
         return {
             price: coffee.stripe_price_id,

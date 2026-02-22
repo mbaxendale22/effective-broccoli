@@ -14,7 +14,9 @@
 </head>
 
 <body>
-
+    <div class="cart-indicator">
+        Cart (<span id="cart-count">0</span>)
+    </div>
     <div class="product-cards__container">
 
 
@@ -22,9 +24,16 @@
             <!-- product card -->
             <div class="product-card__container" id="product-card__container">
                 <div class="product-card__left">
-                    <p>£10</p>
-                    <button>More Info</button>
-                    <button>Add to cart</button>
+                    <p class="product-card__price">
+                        £<%= item.price_250 / 100 %>
+                    </p>
+                    <div class="product-card__btn-container">
+                        <!-- take user to the product page -->
+                        <button class="modern-btn btn-1">More Info</button>
+                        <!-- run a js function to add to the cart session -->
+                        <button data-id="<%= item.stripe_price_id %>" class="modern-btn btn-2 add-to-cart-btn">Add to
+                            cart</button>
+                    </div>
                 </div>
                 <div class="product-card__right">
                     <div class="product-card__text-container">
@@ -86,7 +95,33 @@
         })
     })
 
+    const cartCountElement = document.getElementById('cart-count');
 
+    document.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('add-to-cart-btn')) {
+
+            const coffeeId = e.target.dataset.id;
+
+            try {
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ coffeeId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    cartCountElement.textContent = data.cartCount;
+                }
+
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+            }
+        }
+    });
 
 </script>
 

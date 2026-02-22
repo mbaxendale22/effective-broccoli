@@ -1,26 +1,40 @@
 import { supabase } from '../config/supabase.js'
 
 export const addToCart = (req, res) => {
-    const { coffeeId, quantity } = req.body
+    const { coffeeId } = req.body
+    // console.log(`testing quantity --> ${quantity}`)
 
     if (!req.session.cart) {
         req.session.cart = []
     }
 
     const existingItem = req.session.cart.find(
-        (item) => item.coffeeId === parseInt(coffeeId)
+        (item) => item.coffeeId === coffeeId
     )
 
     if (existingItem) {
-        existingItem.quantity += parseInt(quantity)
+        existingItem.quantity += 1
     } else {
         req.session.cart.push({
-            coffeeId: parseInt(coffeeId),
-            quantity: parseInt(quantity),
+            coffeeId: coffeeId,
+            quantity: 1,
         })
     }
 
-    res.redirect('/cart')
+    const cartCount = req.session.cart.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+    )
+
+    req.session.cart.forEach((cartItem) => {
+        console.log('id', cartItem.coffeeId)
+        console.log('quantity', cartItem.quantity)
+    })
+
+    res.json({
+        success: true,
+        cartCount,
+    })
 }
 
 export const renderCart = async (req, res) => {
@@ -30,24 +44,33 @@ export const renderCart = async (req, res) => {
         return res.render('cart', { items: [], total: 0 })
     }
 
-    // const coffeeIds = cart.map((item) => item.coffeeId)
-    // test
-    const coffeeIds = [2]
+    const coffeeIds = cart.map((item) => item.coffeeId)
 
-    const { data: coffees } = await supabase
+    const { data: coffees, error } = await supabase
         .from('coffees')
         .select('*')
-        .in('id', coffeeIds)
+        .in('stripe_price_id', coffeeIds)
 
-    const items = cart.map((cartItem) => {
-        const coffee = coffees.find((c) => c.id === cartItem.coffeeId)
+    if (error) {
+        console.error(error)
+        return res.status(500).send('Database error')
+    }
 
-        return {
-            ...coffee,
-            quantity: cartItem.quantity,
-            lineTotal: coffee.price_250 * cartItem.quantity,
-        }
-    })
+    const items = cart
+        .map((cartItem) => {
+            const coffee = coffees.find(
+                (c) => c.stripe_price_id === cartItem.coffeeId
+            )
+
+            if (!coffee) return null
+
+            return {
+                ...coffee,
+                quantity: cartItem.quantity,
+                lineTotal: coffee.price_250 * cartItem.quantity,
+            }
+        })
+        .filter(Boolean)
 
     const total = items.reduce((sum, item) => sum + item.lineTotal, 0)
 
