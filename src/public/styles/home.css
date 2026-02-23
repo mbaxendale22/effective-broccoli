@@ -22,11 +22,12 @@ html {
     flex-direction: column;
     justify-content: space-around;
     gap: 1.5rem;
+    color: black;
 }
 
 .product-card__container {
     display: flex;
-    height: 200px;
+    height: 150px;
     width: 800px;
     border-radius: 8px;
     background-color: white;
@@ -152,5 +153,19 @@ html {
 
 .cart-indicator {
     color: white;
-    font-size: 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 5px;
+    z-index: 998;
+    transition: background-color 0.2s ease;
+}
+
+.cart-indicator:hover {
+    background-color: rgba(0, 0, 0, 0.9);
 }

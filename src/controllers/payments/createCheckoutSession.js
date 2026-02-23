@@ -5,7 +5,7 @@ export const createCheckoutSession = async (req, res) => {
     const cart = req.session.cart
 
     if (!cart || cart.length === 0) {
-        return res.redirect('/cart')
+        return res.redirect('/')
     }
 
     const coffeeIds = cart.map((item) => item.coffeeId)
@@ -52,7 +52,7 @@ export const createCheckoutSession = async (req, res) => {
             },
         ],
         success_url: `${req.protocol}://${req.get('host')}/success`,
-        cancel_url: `${req.protocol}://${req.get('host')}/cancel`,
+        cancel_url: `${req.protocol}://${req.get('host')}/`,
     })
 
     res.redirect(303, session.url)

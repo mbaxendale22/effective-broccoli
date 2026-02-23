@@ -1,7 +1,14 @@
 import express from 'express'
 import { handleStripeWebhook } from './controllers/payments/stripe-webhook.js'
 import { createCheckoutSession } from './controllers/payments/createCheckoutSession.js'
-import { addToCart, renderCart } from './controllers/cart.js'
+import {
+    addToCart,
+    renderCart,
+    getCartData,
+    getCartCount,
+    updateCartItem,
+    removeFromCart,
+} from './controllers/cart.js'
 import { renderHome } from './controllers/home.js'
 
 const router = express.Router()
@@ -16,7 +23,11 @@ router.route('/cancel').get((req, res) => res.render('cancel'))
 
 router.route('/create-checkout-session').post(createCheckoutSession)
 router.route('/cart/add').post(addToCart)
+router.route('/cart/update').post(updateCartItem)
+router.route('/cart/remove').post(removeFromCart)
 router.route('/cart').get(renderCart)
+router.route('/cart/data').get(getCartData)
+router.route('/cart/count').get(getCartCount)
 
 router.route('/stripe-webhook').post(handleStripeWebhook)
 
