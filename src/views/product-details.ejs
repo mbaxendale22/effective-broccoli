@@ -4,26 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fourways</title>
+    <title>Product Details - Fourways</title>
     <link href="/styles/home.css" rel="stylesheet">
     <link href="/styles/cart.css" rel="stylesheet">
-</head>
-<script type="module" src="/scripts/home.js"></script>
 </head>
 
 <body class="wrapper">
     <div class="cart-indicator" id="cart-toggle">
         CART (<span id="cart-count">0</span>)
     </div>
-    <div class="header__container">
-        <h1 class="headline-text">Fourways Coffee Roasters</h1>
-        <p>Fourways is a nano-roastery that puts out limited releases and roasts in small batches. Check out our latest
-            releases below:</p>
-    </div>
-    <div class="product-cards__container">
 
+    <div class="product-details__container">
+        <a href="/" class="back-link">← Back to Products</a>
 
-        <% coffees.forEach(item=> { %>
+        <div class="product-cards__container">
             <!-- product card -->
             <div class="product-card__container" id="product-card__container">
                 <div class="product-card__left">
@@ -31,8 +25,6 @@
                         £<%= item.price_250 / 100 %>
                     </p>
                     <div class="product-card__btn-container">
-                        <!-- take user to the product page -->
-                        <a href="/product/<%= item.stripe_price_id %>" class="modern-btn btn-1">More Info</a>
                         <!-- run a js function to add to the cart session -->
                         <button data-id="<%= item.stripe_price_id %>" class="modern-btn btn-2 add-to-cart-btn">Add to
                             cart</button>
@@ -72,8 +64,7 @@
                 </div>
 
             </div>
-
-            <% }) %>
+        </div>
     </div>
 
     <!-- Cart Drawer -->
@@ -83,24 +74,24 @@
         <div id="cart-overlay" class="cart-overlay"></div>
 
 </body>
+
 <script defer>
 
-    const productCards = Array.from(document.getElementsByClassName('product-card__right'))
-    productCards.forEach(card => {
-        const textContainer = card.children[0]
-        const text = Array.from(textContainer.children)
-        text.forEach(element => {
-            const isOriginText = element.classList.contains('product-card__origin')
-            const splitText = Array.from(element.textContent.trim().split(''))
-            element.textContent = ''
-            splitText.map(char => {
-                const span = document.createElement('span')
-                span.textContent = isOriginText ? char.toUpperCase() : char
-                element.appendChild(span)
-            })
-
+    const productCardRight = document.querySelector('.product-card__right');
+    const textContainer = productCardRight.children[0]
+    const text = Array.from(textContainer.children)
+    text.forEach(element => {
+        const isOriginText = element.classList.contains('product-card__origin')
+        const splitText = Array.from(element.textContent.trim().split(''))
+        element.textContent = ''
+        splitText.map(char => {
+            const span = document.createElement('span')
+            span.textContent = isOriginText ? char.toUpperCase() : char
+            element.appendChild(span)
         })
+
     })
+
 
     const cartCountElement = document.getElementById('cart-count');
     const cartToggle = document.getElementById('cart-toggle');
@@ -185,30 +176,6 @@
 
     // Handle cart item interactions using event delegation
     document.addEventListener('click', async (e) => {
-        // Add to cart
-        if (e.target.classList.contains('add-to-cart-btn')) {
-            const coffeeId = e.target.dataset.id;
-
-            try {
-                const response = await fetch('/cart/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ coffeeId })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    cartCountElement.textContent = data.cartCount;
-                }
-
-            } catch (error) {
-                console.error('Error adding to cart:', error);
-            }
-        }
-
         // Increase quantity
         if (e.target.classList.contains('increase-btn')) {
             const coffeeId = e.target.dataset.id;

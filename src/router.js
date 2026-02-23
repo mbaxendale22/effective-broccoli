@@ -10,10 +10,12 @@ import {
     removeFromCart,
 } from './controllers/cart.js'
 import { renderHome } from './controllers/home.js'
+import { renderProductDetails } from './controllers/product.js'
 
 const router = express.Router()
 
 router.route('/').get(renderHome)
+router.route('/product/:productId').get(renderProductDetails)
 router.route('/success').get((req, res) => {
     // empty cart after successful checkout
     req.session.cart = []
