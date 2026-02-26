@@ -1,15 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout canceled</title>
-    <link rel="stylesheet" href="style.css">
+    <link href="/styles/home.css" rel="stylesheet">
+    <link href="/styles/navbar.css" rel="stylesheet">
+    <link href="/styles/cart.css" rel="stylesheet">
+    <script type="module" src="/scripts/home.js" defer></script>
 </head>
 
-<body>
-    <section>
-        <p>Forgot to add something to your cart? Shop around then come back to pay!</p>
-    </section>
+<body class="wrapper">
+    <%- include('partials/navbar') %>
+
+        <section class="header__container">
+            <h1 class="headline-text">Checkout canceled</h1>
+            <p>Forgot to add something to your cart? Shop around then come back to pay!</p>
+        </section>
+
+        <%- include('cart') %>
+            <div id="cart-overlay" class="cart-overlay"></div>
 </body>
 
 </html>

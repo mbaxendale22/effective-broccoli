@@ -6,72 +6,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details - Fourways</title>
     <link href="/styles/home.css" rel="stylesheet">
+    <link href="/styles/navbar.css" rel="stylesheet">
     <link href="/styles/cart.css" rel="stylesheet">
+    <script type="module" src="/scripts/home.js" defer></script>
 </head>
 
 <body class="wrapper">
-    <div class="cart-indicator" id="cart-toggle">
-        CART (<span id="cart-count">0</span>)
-    </div>
+    <%- include('partials/navbar') %>
 
-    <div class="product-details__container">
-        <a href="/" class="back-link">← Back to Products</a>
+        <div class="product-details__container">
+            <a href="/" class="back-link">← Back to Products</a>
 
-        <div class="product-cards__container">
-            <!-- product card -->
-            <div class="product-card__container" id="product-card__container">
-                <div class="product-card__left">
-                    <p class="product-card__price">
-                        £<%= item.price_250 / 100 %>
-                    </p>
-                    <div class="product-card__btn-container">
-                        <!-- run a js function to add to the cart session -->
-                        <button data-id="<%= item.stripe_price_id %>" class="modern-btn btn-2 add-to-cart-btn">Add to
-                            cart</button>
+            <div class="product-cards__container">
+                <!-- product card -->
+                <div class="product-card__container" id="product-card__container">
+                    <div class="product-card__left">
+                        <p class="product-card__price">
+                            £<%= item.price_250 / 100 %>
+                        </p>
+                        <div class="product-card__btn-container">
+                            <!-- run a js function to add to the cart session -->
+                            <button data-id="<%= item.stripe_price_id %>" class="modern-btn btn-2 add-to-cart-btn">Add
+                                to
+                                cart</button>
+                        </div>
                     </div>
+                    <div class="product-card__right">
+                        <div class="product-card__text-container">
+                            <div class="product-card__origin" id="product-card__origin">
+                                <p id="product-card__origin-text">
+                                    <%= item.origin %>
+                                </p>
+                            </div>
+                            <div class="product-card__process" id="product-card__process">
+                                <p id="product-card__process-text">
+                                    <%= item.process %>
+                                </p>
+                            </div>
+                            <div class="product-card__producer" id="product-card__producer">
+                                <p id="product-card__producer-text">
+                                    <%= item.producer %>
+                                </p>
+                            </div>
+                            <div class="product-card__variety" id="product-card__variety">
+                                <p id="product-card__variety-text">
+                                    <%= item.variety %>
+                                </p>
+                            </div>
+
+                        </div>
+                        <div class="product-card__logo-container">
+                            <div class="product-card__logo"></div>
+
+
+                        </div>
+
+
+                    </div>
+
                 </div>
-                <div class="product-card__right">
-                    <div class="product-card__text-container">
-                        <div class="product-card__origin" id="product-card__origin">
-                            <p id="product-card__origin-text">
-                                <%= item.origin %>
-                            </p>
-                        </div>
-                        <div class="product-card__process" id="product-card__process">
-                            <p id="product-card__process-text">
-                                <%= item.process %>
-                            </p>
-                        </div>
-                        <div class="product-card__producer" id="product-card__producer">
-                            <p id="product-card__producer-text">
-                                <%= item.producer %>
-                            </p>
-                        </div>
-                        <div class="product-card__variety" id="product-card__variety">
-                            <p id="product-card__variety-text">
-                                <%= item.variety %>
-                            </p>
-                        </div>
-
-                    </div>
-                    <div class="product-card__logo-container">
-                        <div class="product-card__logo"></div>
-
-
-                    </div>
-
-
-                </div>
-
             </div>
         </div>
-    </div>
 
-    <!-- Cart Drawer -->
-    <%- include('cart') %>
+        <!-- Cart Drawer -->
+        <%- include('cart') %>
 
-        <!-- Cart Overlay -->
-        <div id="cart-overlay" class="cart-overlay"></div>
+            <!-- Cart Overlay -->
+            <div id="cart-overlay" class="cart-overlay"></div>
 
 </body>
 
@@ -92,165 +93,6 @@
 
     })
 
-
-    const cartCountElement = document.getElementById('cart-count');
-    const cartToggle = document.getElementById('cart-toggle');
-    const cartDrawer = document.getElementById('cart-drawer');
-    const cartOverlay = document.getElementById('cart-overlay');
-    const closeCartBtn = document.getElementById('close-cart');
-
-    // Function to toggle cart drawer
-    function toggleCart() {
-        cartDrawer.classList.toggle('open');
-        cartOverlay.classList.toggle('active');
-        if (cartDrawer.classList.contains('open')) {
-            fetchCartData();
-        }
-    }
-
-    // Function to fetch and display cart data
-    async function fetchCartData() {
-        try {
-            const response = await fetch('/cart/data');
-            const data = await response.json();
-            updateCartDisplay(data);
-        } catch (error) {
-            console.error('Error fetching cart data:', error);
-        }
-    }
-
-    // Function to update cart display
-    function updateCartDisplay(data) {
-        const cartContent = document.getElementById('cart-content');
-        const cartFooter = document.querySelector('.cart-footer');
-
-        if (data.items.length === 0) {
-            cartContent.innerHTML = '<p>Your cart is empty.</p>';
-            cartFooter.style.display = 'none';
-        } else {
-            let html = '<ul class="cart-items">';
-            data.items.forEach(item => {
-                html += `
-                    <li class="cart-item">
-                        <div class="item-details">
-                            <span class="item-name">${item.name}</span>
-                            <span class="item-price">£${(item.price_250 / 100).toFixed(2)} each</span>
-                        </div>
-                        <div class="item-controls">
-                            <button class="qty-btn decrease-btn" data-id="${item.stripe_price_id}">−</button>
-                            <span class="item-qty">${item.quantity}</span>
-                            <button class="qty-btn increase-btn" data-id="${item.stripe_price_id}">+</button>
-                        </div>
-                        <div class="item-actions">
-                            <span class="item-total">£${(item.lineTotal / 100).toFixed(2)}</span>
-                            <button class="remove-btn" data-id="${item.stripe_price_id}">✕</button>
-                        </div>
-                    </li>
-                `;
-            });
-            html += '</ul>';
-            html += `<div class="cart-total"><h3>Total: £${(data.total / 100).toFixed(2)}</h3></div>`;
-            cartContent.innerHTML = html;
-            cartFooter.style.display = 'block';
-        }
-    }
-
-    // Function to initialize cart count on page load
-    async function initializeCartCount() {
-        try {
-            const response = await fetch('/cart/count');
-            const data = await response.json();
-            cartCountElement.textContent = data.cartCount;
-        } catch (error) {
-            console.error('Error fetching cart count:', error);
-        }
-    }
-
-    // Initialize cart count when page loads
-    initializeCartCount();
-
-    // Event listeners
-    cartToggle.addEventListener('click', toggleCart);
-    closeCartBtn.addEventListener('click', toggleCart);
-    cartOverlay.addEventListener('click', toggleCart);
-
-    // Handle cart item interactions using event delegation
-    document.addEventListener('click', async (e) => {
-        // Increase quantity
-        if (e.target.classList.contains('increase-btn')) {
-            const coffeeId = e.target.dataset.id;
-
-            try {
-                const response = await fetch('/cart/update', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ coffeeId, action: 'increase' })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    cartCountElement.textContent = data.cartCount;
-                    fetchCartData();
-                }
-
-            } catch (error) {
-                console.error('Error updating cart:', error);
-            }
-        }
-
-        // Decrease quantity
-        if (e.target.classList.contains('decrease-btn')) {
-            const coffeeId = e.target.dataset.id;
-
-            try {
-                const response = await fetch('/cart/update', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ coffeeId, action: 'decrease' })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    cartCountElement.textContent = data.cartCount;
-                    fetchCartData();
-                }
-
-            } catch (error) {
-                console.error('Error updating cart:', error);
-            }
-        }
-
-        // Remove item
-        if (e.target.classList.contains('remove-btn')) {
-            const coffeeId = e.target.dataset.id;
-
-            try {
-                const response = await fetch('/cart/remove', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ coffeeId })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    cartCountElement.textContent = data.cartCount;
-                    fetchCartData();
-                }
-
-            } catch (error) {
-                console.error('Error removing from cart:', error);
-            }
-        }
-    });
 
 </script>
 

@@ -15,6 +15,7 @@ import { renderProductDetails } from './controllers/product.js'
 const router = express.Router()
 
 router.route('/').get(renderHome)
+router.route('/about').get((req, res) => res.render('about'))
 router.route('/product/:productId').get(renderProductDetails)
 router.route('/success').get((req, res) => {
     // empty cart after successful checkout

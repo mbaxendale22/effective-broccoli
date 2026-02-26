@@ -1,0 +1,89 @@
+.site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.site-nav__left,
+.site-nav__middle,
+.site-nav__right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.site-nav__middle {
+    justify-content: center;
+    gap: 1.25rem;
+}
+
+.site-nav__right {
+    justify-content: flex-end;
+}
+
+.site-nav__brand-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    color: white;
+}
+
+.site-nav__logo {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
+.site-nav__brand {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.site-nav__link {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.site-nav__link:hover {
+    opacity: 0.85;
+}
+
+.site-nav__link--active {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.site-nav__cart {
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+}
+
+.site-nav__cart:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 900px) {
+    .site-nav {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+    }
+
+    .site-nav__left,
+    .site-nav__middle,
+    .site-nav__right {
+        justify-content: center;
+    }
+}
