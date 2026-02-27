@@ -1,21 +1,55 @@
 import { supabase } from '../config/supabase.js'
 
+const ALLOWED_GRINDS = ['whole_beans', 'filter', 'espresso']
+
+const normalizeGrind = (grind) => {
+    if (typeof grind !== 'string') {
+        return null
+    }
+
+    const normalizedGrind = grind.trim().toLowerCase()
+    return ALLOWED_GRINDS.includes(normalizedGrind) ? normalizedGrind : null
+}
+
+const getCartItemGrind = (cartItem) =>
+    normalizeGrind(cartItem.grind) || 'whole_beans'
+
 export const addToCart = (req, res) => {
-    const { coffeeId } = req.body
+    const { coffeeId, grind } = req.body
+    const normalizedGrind = normalizeGrind(grind)
+
+    if (typeof coffeeId !== 'string' || !coffeeId.trim()) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid coffee id',
+        })
+    }
+
+    if (!normalizedGrind) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid grind option',
+        })
+    }
+
+    const normalizedCoffeeId = coffeeId.trim()
 
     if (!req.session.cart) {
         req.session.cart = []
     }
 
     const existingItem = req.session.cart.find(
-        (item) => item.coffeeId === coffeeId
+        (item) =>
+            item.coffeeId === normalizedCoffeeId &&
+            getCartItemGrind(item) === normalizedGrind
     )
 
     if (existingItem) {
         existingItem.quantity += 1
     } else {
         req.session.cart.push({
-            coffeeId: coffeeId,
+            coffeeId: normalizedCoffeeId,
+            grind: normalizedGrind,
             quantity: 1,
         })
     }
@@ -65,6 +99,7 @@ export const renderCart = async (req, res) => {
 
             return {
                 ...coffee,
+                grind: getCartItemGrind(cartItem),
                 quantity: cartItem.quantity,
                 lineTotal: coffee.price_250 * cartItem.quantity,
             }
@@ -105,6 +140,7 @@ export const getCartData = async (req, res) => {
 
             return {
                 ...coffee,
+                grind: getCartItemGrind(cartItem),
                 quantity: cartItem.quantity,
                 lineTotal: coffee.price_250 * cartItem.quantity,
             }
@@ -123,14 +159,33 @@ export const getCartCount = (req, res) => {
 }
 
 export const updateCartItem = (req, res) => {
-    const { coffeeId, action } = req.body
+    const { coffeeId, grind, action } = req.body
+    const normalizedGrind = normalizeGrind(grind)
+
+    if (typeof coffeeId !== 'string' || !coffeeId.trim()) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid coffee id',
+        })
+    }
+
+    if (!normalizedGrind) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid grind option',
+        })
+    }
+
+    const normalizedCoffeeId = coffeeId.trim()
 
     if (!req.session.cart) {
         req.session.cart = []
     }
 
     const existingItem = req.session.cart.find(
-        (item) => item.coffeeId === coffeeId
+        (item) =>
+            item.coffeeId === normalizedCoffeeId &&
+            getCartItemGrind(item) === normalizedGrind
     )
 
     if (!existingItem) {
@@ -146,7 +201,11 @@ export const updateCartItem = (req, res) => {
         // Remove item if quantity reaches 0
         if (existingItem.quantity <= 0) {
             req.session.cart = req.session.cart.filter(
-                (item) => item.coffeeId !== coffeeId
+                (item) =>
+                    !(
+                        item.coffeeId === normalizedCoffeeId &&
+                        getCartItemGrind(item) === normalizedGrind
+                    )
             )
         }
     } else {
@@ -165,14 +224,35 @@ export const updateCartItem = (req, res) => {
 }
 
 export const removeFromCart = (req, res) => {
-    const { coffeeId } = req.body
+    const { coffeeId, grind } = req.body
+    const normalizedGrind = normalizeGrind(grind)
+
+    if (typeof coffeeId !== 'string' || !coffeeId.trim()) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid coffee id',
+        })
+    }
+
+    if (!normalizedGrind) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid grind option',
+        })
+    }
+
+    const normalizedCoffeeId = coffeeId.trim()
 
     if (!req.session.cart) {
         req.session.cart = []
     }
 
     req.session.cart = req.session.cart.filter(
-        (item) => item.coffeeId !== coffeeId
+        (item) =>
+            !(
+                item.coffeeId === normalizedCoffeeId &&
+                getCartItemGrind(item) === normalizedGrind
+            )
     )
 
     const cartCount = req.session.cart.reduce(

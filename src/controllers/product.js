@@ -1,23 +1,51 @@
 import { supabase } from '../config/supabase.js'
 
 export const renderProductDetails = async (req, res) => {
-    const { productId } = req.params
-
-    // TODO: Make Supabase call to fetch product details by stripe_price_id or other identifier
-    const { data: item, error } = await supabase
-        .from('coffees')
-        .select('*')
-        .eq('stripe_price_id', productId)
-        .single()
-
     try {
-        // Scaffold for Supabase call - to be implemented
-        // if (error) throw error
+        const { productId } = req.params
 
-        // For now, pass productId to view
-        res.render('product-details', { item })
+        if (typeof productId !== 'string' || !productId.trim()) {
+            return res
+                .status(400)
+                .send('Invalid product id. Please provide a valid product.')
+        }
+
+        const normalizedProductId = productId.trim()
+
+        const { data: item, error } = await supabase
+            .from('coffees')
+            .select('*')
+            .eq('stripe_price_id', normalizedProductId)
+            .maybeSingle()
+
+        if (error) {
+            console.error('Error fetching product details from Supabase:', {
+                message: error.message,
+                code: error.code,
+                details: error.details,
+                hint: error.hint,
+                productId: normalizedProductId,
+            })
+
+            return res
+                .status(500)
+                .send('Unable to load product details right now.')
+        }
+
+        if (!item) {
+            return res
+                .status(404)
+                .send('Product not found. It may have been removed.')
+        }
+
+        return res.render('product-details', { item })
     } catch (error) {
-        console.error('Error fetching product details:', error)
-        res.status(500).send('Error loading product details')
+        console.error('Unexpected error in renderProductDetails:', {
+            message: error?.message,
+            stack: error?.stack,
+            productId: req.params?.productId,
+        })
+
+        return res.status(500).send('Unexpected error loading product details.')
     }
 }

@@ -89,6 +89,7 @@ html {
 
 .btn-1 {
     background: #111111;
+    text-decoration: none;
 }
 
 .btn-2 {
@@ -119,6 +120,9 @@ html {
 .product-card__origin {
     display: flex;
     justify-content: space-evenly;
+    font-weight: 700;
+    font-size: 1.2rem;
+    padding-bottom: 0.5rem;
 }
 .product-card__process {
     display: flex;

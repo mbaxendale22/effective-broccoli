@@ -2,6 +2,7 @@ import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import bodyParser from 'body-parser'
+import { supabase } from './config/supabase.js'
 // import cookieParser from 'cookie-parser'
 
 import router from './router.js'
@@ -33,7 +34,7 @@ const limiter = rateLimit({
     // store: ... , // Use an external store for consistency across multiple server instances.
 })
 
-// const cspPolicy = `default-src ${ROOT_DOMAIN}; script-src ${ROOT_DOMAIN}; style-src ${ROOT_DOMAIN} https://fonts.googleapis.com; img-src ${ROOT_DOMAIN}; font-src https://fonts.gstatic.com ${process.env.PROD_DOMAIN} data:;`
+const cspPolicy = `default-src ${ROOT_DOMAIN}; script-src ${ROOT_DOMAIN}; style-src ${ROOT_DOMAIN} https://fonts.googleapis.com; img-src ${ROOT_DOMAIN} https://i.postimg.cc; font-src https://fonts.gstatic.com ${process.env.PROD_DOMAIN} data:;`
 app.set('trust proxy', 1)
 
 app.set('view engine', 'ejs')
@@ -60,10 +61,10 @@ app.use(
 // Apply the rate limiting middleware to all requests.
 app.use(limiter)
 
-// app.use((req, res, next) => {
-//     res.set('Content-Security-Policy', cspPolicy);
-//     next();
-// });
+app.use((req, res, next) => {
+    res.set('Content-Security-Policy', cspPolicy)
+    next()
+})
 
 // request logger
 app.use((req, _res, next) => {

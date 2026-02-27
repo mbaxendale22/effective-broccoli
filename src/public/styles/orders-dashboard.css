@@ -1,0 +1,153 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    color: #111827;
+}
+
+.orders-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.orders-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.orders-header h1 {
+    margin: 0;
+}
+
+.orders-header p {
+    margin: 6px 0 0;
+    color: #4b5563;
+}
+
+.logout-btn {
+    height: 40px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    padding: 0 14px;
+    cursor: pointer;
+}
+
+.orders-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.filter-btn {
+    height: 36px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    padding: 0 12px;
+    cursor: pointer;
+}
+
+.filter-btn.is-active {
+    background: #111827;
+    border-color: #111827;
+    color: #fff;
+}
+
+.order-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 16px;
+}
+
+.order-card__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.order-card__top p {
+    margin: 4px 0;
+}
+
+.status-form {
+    display: grid;
+    gap: 8px;
+    min-width: 180px;
+}
+
+.status-form select,
+.status-form button {
+    height: 36px;
+    border-radius: 6px;
+}
+
+.status-form select {
+    border: 1px solid #d1d5db;
+    padding: 0 8px;
+}
+
+.status-form button {
+    border: none;
+    background: #111827;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.order-items {
+    margin-top: 16px;
+}
+
+.order-items h3 {
+    margin: 0 0 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #e5e7eb;
+    padding: 8px;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    background: #f3f4f6;
+}
+
+.orders-error {
+    color: #b91c1c;
+    margin-bottom: 16px;
+}
+
+.empty-state,
+.item-empty {
+    color: #6b7280;
+}
+
+@media (max-width: 800px) {
+    .order-card__top {
+        flex-direction: column;
+    }
+
+    .status-form {
+        width: 100%;
+        max-width: 320px;
+    }
+}

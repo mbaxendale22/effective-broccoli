@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders Dashboard</title>
+    <link href="/styles/orders-dashboard.css" rel="stylesheet">
+    <script type="module" src="/scripts/ordersDashboard.js"></script>
+</head>
+
+<body>
+    <main class="orders-page">
+        <header class="orders-header">
+            <div>
+                <h1>Orders Dashboard</h1>
+                <p>Retail Stripe orders and line items.</p>
+            </div>
+            <form action="/admin/logout" method="POST">
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </header>
+
+        <% if (error) { %>
+            <p class="orders-error">
+                <%= error %>
+            </p>
+            <% } %>
+
+                <section class="orders-filters" id="orders-filters">
+                    <% filters.forEach((filterOption)=> { %>
+                        <button type="button"
+                            class="filter-btn <%= selectedFilter === filterOption ? 'is-active' : '' %>"
+                            data-filter="<%= filterOption %>">
+                            <%= filterOption==='all' ? 'All Orders' :
+                                `${filterOption.charAt(0).toUpperCase()}${filterOption.slice(1)} Orders` %>
+                        </button>
+                        <% }) %>
+                </section>
+
+                <section id="orders-list"></section>
+
+                <script id="orders-dashboard-data" type="application/json">
+                    <%- JSON.stringify({
+                        orders,
+                        itemsByOrderId,
+                        allowedStatuses,
+                        selectedFilter,
+                    }).replace(/</g, '\\u003c') %>
+                </script>
+    </main>
+</body>
+
+</html>

@@ -3,9 +3,16 @@ const cartToggle = document.getElementById('cart-toggle')
 const cartDrawer = document.getElementById('cart-drawer')
 const cartOverlay = document.getElementById('cart-overlay')
 const closeCartBtn = document.getElementById('close-cart')
+const grindModal = document.getElementById('grind-modal')
+const grindModalOverlay = document.getElementById('grind-modal-overlay')
+const closeGrindModalBtn = document.getElementById('close-grind-modal')
+const grindOptionButtons = Array.from(
+    document.querySelectorAll('.grind-option-btn')
+)
 
 const navLinks = Array.from(document.querySelectorAll('[data-nav-route]'))
 const currentPath = window.location.pathname
+let pendingCoffeeId = null
 
 navLinks.forEach((link) => {
     if (link.dataset.navRoute === currentPath) {
@@ -22,6 +29,41 @@ function toggleCart() {
     if (cartDrawer.classList.contains('open')) {
         fetchCartData()
     }
+}
+
+function openGrindModal(coffeeId) {
+    if (!grindModal || !grindModalOverlay) return
+
+    pendingCoffeeId = coffeeId
+    grindModal.classList.add('open')
+    grindModalOverlay.classList.add('active')
+}
+
+function closeGrindModal() {
+    if (!grindModal || !grindModalOverlay) return
+
+    pendingCoffeeId = null
+    grindModal.classList.remove('open')
+    grindModalOverlay.classList.remove('active')
+}
+
+async function addToCart(coffeeId, grind) {
+    const response = await fetch('/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ coffeeId, grind }),
+    })
+
+    return response.json()
+}
+
+function getGrindLabel(grind) {
+    if (grind === 'whole_beans') return 'Whole Beans'
+    if (grind === 'filter') return 'Filter Grind'
+    if (grind === 'espresso') return 'Espresso Grind'
+    return 'Whole Beans'
 }
 
 async function fetchCartData() {
@@ -53,16 +95,17 @@ function updateCartDisplay(data) {
 				<li class="cart-item">
 					<div class="item-details">
 						<span class="item-name">${item.name}</span>
+                        <span class="item-grind">${getGrindLabel(item.grind)}</span>
 						<span class="item-price">£${(item.price_250 / 100).toFixed(2)} each</span>
 					</div>
 					<div class="item-controls">
-						<button class="qty-btn decrease-btn" data-id="${item.stripe_price_id}">−</button>
+                        <button class="qty-btn decrease-btn" data-id="${item.stripe_price_id}" data-grind="${item.grind}">−</button>
 						<span class="item-qty">${item.quantity}</span>
-						<button class="qty-btn increase-btn" data-id="${item.stripe_price_id}">+</button>
+                        <button class="qty-btn increase-btn" data-id="${item.stripe_price_id}" data-grind="${item.grind}">+</button>
 					</div>
 					<div class="item-actions">
 						<span class="item-total">£${(item.lineTotal / 100).toFixed(2)}</span>
-						<button class="remove-btn" data-id="${item.stripe_price_id}">✕</button>
+                        <button class="remove-btn" data-id="${item.stripe_price_id}" data-grind="${item.grind}">✕</button>
 					</div>
 				</li>
 			`
@@ -101,31 +144,44 @@ if (cartOverlay) {
     cartOverlay.addEventListener('click', toggleCart)
 }
 
-document.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('add-to-cart-btn')) {
-        const coffeeId = e.target.dataset.id
+if (closeGrindModalBtn) {
+    closeGrindModalBtn.addEventListener('click', closeGrindModal)
+}
+
+if (grindModalOverlay) {
+    grindModalOverlay.addEventListener('click', closeGrindModal)
+}
+
+grindOptionButtons.forEach((button) => {
+    button.addEventListener('click', async () => {
+        if (!pendingCoffeeId) {
+            return
+        }
 
         try {
-            const response = await fetch('/cart/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ coffeeId }),
-            })
-
-            const data = await response.json()
+            const data = await addToCart(pendingCoffeeId, button.dataset.grind)
 
             if (data.success && cartCountElement) {
                 cartCountElement.textContent = data.cartCount
             }
         } catch (error) {
             console.error('Error adding to cart:', error)
+        } finally {
+            closeGrindModal()
         }
+    })
+})
+
+document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('add-to-cart-btn')) {
+        const coffeeId = e.target.dataset.id
+
+        openGrindModal(coffeeId)
     }
 
     if (e.target.classList.contains('increase-btn')) {
         const coffeeId = e.target.dataset.id
+        const grind = e.target.dataset.grind
 
         try {
             const response = await fetch('/cart/update', {
@@ -133,7 +189,7 @@ document.addEventListener('click', async (e) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ coffeeId, action: 'increase' }),
+                body: JSON.stringify({ coffeeId, grind, action: 'increase' }),
             })
 
             const data = await response.json()
@@ -149,6 +205,7 @@ document.addEventListener('click', async (e) => {
 
     if (e.target.classList.contains('decrease-btn')) {
         const coffeeId = e.target.dataset.id
+        const grind = e.target.dataset.grind
 
         try {
             const response = await fetch('/cart/update', {
@@ -156,7 +213,7 @@ document.addEventListener('click', async (e) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ coffeeId, action: 'decrease' }),
+                body: JSON.stringify({ coffeeId, grind, action: 'decrease' }),
             })
 
             const data = await response.json()
@@ -172,6 +229,7 @@ document.addEventListener('click', async (e) => {
 
     if (e.target.classList.contains('remove-btn')) {
         const coffeeId = e.target.dataset.id
+        const grind = e.target.dataset.grind
 
         try {
             const response = await fetch('/cart/remove', {
@@ -179,7 +237,7 @@ document.addEventListener('click', async (e) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ coffeeId }),
+                body: JSON.stringify({ coffeeId, grind }),
             })
 
             const data = await response.json()

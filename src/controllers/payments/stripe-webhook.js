@@ -1,6 +1,28 @@
 import { stripe } from '../../config/stripe.js'
 import { supabase } from '../../config/supabase.js'
 
+const parseCartSnapshot = (snapshot) => {
+    if (!snapshot || typeof snapshot !== 'string') {
+        return []
+    }
+
+    return snapshot
+        .split('|')
+        .map((entry) => {
+            const [coffeeIdPart, quantityPart, grindPart] = entry.split(':')
+            const coffeeId = decodeURIComponent(coffeeIdPart || '').trim()
+            const quantity = Number.parseInt(quantityPart, 10)
+            const grind = (grindPart || 'whole_beans').trim()
+
+            if (!coffeeId || !Number.isInteger(quantity) || quantity <= 0) {
+                return null
+            }
+
+            return { coffeeId, quantity, grind }
+        })
+        .filter(Boolean)
+}
+
 export const handleStripeWebhook = async (req, res) => {
     const sig = req.headers['stripe-signature']
 
@@ -19,6 +41,12 @@ export const handleStripeWebhook = async (req, res) => {
 
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object
+        const shippingDetails = session.collected_information?.shipping_details
+        const customerDetails = session.customer_details
+        const resolvedShippingName =
+            shippingDetails?.name || customerDetails?.name || null
+        const resolvedShippingAddress =
+            shippingDetails?.address || customerDetails?.address || null
 
         // ✅ Fulfill order here
         // Save to database
@@ -30,12 +58,9 @@ export const handleStripeWebhook = async (req, res) => {
                     {
                         stripe_session_id: session.id,
                         stripe_payment_intent_id: session.payment_intent,
-                        customer_email: session.customer_details?.email,
-                        shipping_name:
-                            session.collected_information.shipping_details.name,
-                        shipping_address:
-                            session.collected_information.shipping_details
-                                .address,
+                        customer_email: customerDetails?.email,
+                        shipping_name: resolvedShippingName,
+                        shipping_address: resolvedShippingAddress,
                         amount_subtotal: session.amount_subtotal,
                         amount_shipping: session.total_details?.amount_shipping,
                         amount_total: session.amount_total,
@@ -55,21 +80,70 @@ export const handleStripeWebhook = async (req, res) => {
                 throw orderError
             }
 
-            // 2️⃣ Get Stripe line items
-            const lineItems = await stripe.checkout.sessions.listLineItems(
-                session.id,
-                { limit: 100 }
+            const cartSnapshotItems = parseCartSnapshot(
+                session.metadata?.cart_snapshot
             )
 
-            // 3️⃣ Insert order_items
-            const orderItemsToInsert = lineItems.data.map((item) => ({
-                order_id: order.id,
-                stripe_price_id: item.price.id,
-                name: item.description,
-                unit_price: item.price.unit_amount,
-                quantity: item.quantity,
-                line_total: item.amount_total,
-            }))
+            let orderItemsToInsert = []
+
+            if (cartSnapshotItems.length > 0) {
+                const snapshotCoffeeIds = cartSnapshotItems.map(
+                    (item) => item.coffeeId
+                )
+
+                const { data: coffees, error: coffeesError } = await supabase
+                    .from('coffees')
+                    .select('stripe_price_id,name,price_250')
+                    .in('stripe_price_id', snapshotCoffeeIds)
+
+                if (coffeesError) {
+                    throw coffeesError
+                }
+
+                const coffeesByStripeId = coffees.reduce((acc, coffee) => {
+                    acc[coffee.stripe_price_id] = coffee
+                    return acc
+                }, {})
+
+                orderItemsToInsert = cartSnapshotItems
+                    .map((snapshotItem) => {
+                        const coffee = coffeesByStripeId[snapshotItem.coffeeId]
+
+                        if (!coffee) {
+                            return null
+                        }
+
+                        const unitPrice = coffee.price_250
+
+                        return {
+                            order_id: order.id,
+                            stripe_price_id: snapshotItem.coffeeId,
+                            name: coffee.name,
+                            unit_price: unitPrice,
+                            quantity: snapshotItem.quantity,
+                            line_total: unitPrice * snapshotItem.quantity,
+                            grind: snapshotItem.grind,
+                        }
+                    })
+                    .filter(Boolean)
+            }
+
+            if (orderItemsToInsert.length === 0) {
+                const lineItems = await stripe.checkout.sessions.listLineItems(
+                    session.id,
+                    { limit: 100 }
+                )
+
+                orderItemsToInsert = lineItems.data.map((item) => ({
+                    order_id: order.id,
+                    stripe_price_id: item.price.id,
+                    name: item.description,
+                    unit_price: item.price.unit_amount,
+                    quantity: item.quantity,
+                    line_total: item.amount_total,
+                    grind: 'whole_beans',
+                }))
+            }
 
             const { error: itemsError } = await supabase
                 .from('order_items')

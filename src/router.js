@@ -11,6 +11,13 @@ import {
 } from './controllers/cart.js'
 import { renderHome } from './controllers/home.js'
 import { renderProductDetails } from './controllers/product.js'
+import { login, logout, renderLogin } from './controllers/auth.js'
+import {
+    getFilteredOrders,
+    renderOrdersDashboard,
+    updateOrderStatus,
+} from './controllers/orders.js'
+import { requireAdminAuth } from './utils/auth.js'
 
 const router = express.Router()
 
@@ -23,6 +30,15 @@ router.route('/success').get((req, res) => {
     res.render('success')
 })
 router.route('/cancel').get((req, res) => res.render('cancel'))
+
+router.route('/admin/login').get(renderLogin).post(login)
+router.route('/admin/logout').post(logout)
+
+router.route('/admin/orders').get(requireAdminAuth, renderOrdersDashboard)
+router.route('/admin/api/orders').get(requireAdminAuth, getFilteredOrders)
+router
+    .route('/admin/orders/:orderId/status')
+    .post(requireAdminAuth, updateOrderStatus)
 
 router.route('/create-checkout-session').post(createCheckoutSession)
 router.route('/cart/add').post(addToCart)

@@ -8,15 +8,16 @@
     <link href="/styles/home.css" rel="stylesheet">
     <link href="/styles/navbar.css" rel="stylesheet">
     <link href="/styles/cart.css" rel="stylesheet">
-    <script type="module" src="/scripts/home.js" defer></script>
+    <script type="module" src="/scripts/home.js"></script>
+    <script type="module" src="/scripts/productCard.js"></script>
 </head>
 
-<body class="">
+<body>
     <%- include('partials/navbar') %>
         <main class="page-wrapper">
 
             <div class="header__container">
-                <h1 class="headline-text">Fourways Coffee Roasters</h1>
+                <!-- <h1 class="headline-text">Fourways Coffee Roasters</h1> -->
                 <p>Fourways is a nano-roastery that puts out limited releases and roasts in small batches. Check out our
                     latest
                     releases below:</p>
@@ -81,31 +82,12 @@
 
             <!-- Cart Drawer -->
             <%- include('cart') %>
+                <%- include('partials/grind-modal') %>
 
-                <!-- Cart Overlay -->
-                <div id="cart-overlay" class="cart-overlay"></div>
+                    <!-- Cart Overlay -->
+                    <div id="cart-overlay" class="cart-overlay"></div>
         </main>
 
 </body>
-<script defer>
-
-    const productCards = Array.from(document.getElementsByClassName('product-card__right'))
-    productCards.forEach(card => {
-        const textContainer = card.children[0]
-        const text = Array.from(textContainer.children)
-        text.forEach(element => {
-            const isOriginText = element.classList.contains('product-card__origin')
-            const splitText = Array.from(element.textContent.trim().split(''))
-            element.textContent = ''
-            splitText.map(char => {
-                const span = document.createElement('span')
-                span.textContent = isOriginText ? char.toUpperCase() : char
-                element.appendChild(span)
-            })
-
-        })
-    })
-
-</script>
 
 </html>

@@ -100,6 +100,13 @@ html {
     font-size: 0.85rem;
 }
 
+.item-grind {
+    color: #9ca3af;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
 .item-controls {
     display: flex;
     align-items: center;
@@ -216,4 +223,76 @@ html {
 
 .cart-overlay.active {
     display: block;
+}
+
+.grind-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 1100;
+    display: none;
+}
+
+.grind-modal-overlay.active {
+    display: block;
+}
+
+.grind-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(92vw, 420px);
+    background: #171717;
+    color: white;
+    border: 1px solid #2f2f2f;
+    border-radius: 10px;
+    padding: 18px;
+    z-index: 1101;
+    display: none;
+}
+
+.grind-modal.open {
+    display: block;
+}
+
+.grind-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.grind-modal__header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.grind-modal__close {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.7rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.grind-modal__options {
+    display: grid;
+    gap: 10px;
+}
+
+.grind-option-btn {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid #3f3f46;
+    border-radius: 8px;
+    background: #202020;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.grind-option-btn:hover {
+    background: #2a2a2a;
 }
