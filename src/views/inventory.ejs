@@ -39,7 +39,12 @@
 
                         <section class="inventory-card inventory-card--actions">
                             <h2>Roast Sessions</h2>
-                            <button type="button" class="primary-btn" id="open-roast-modal">Log Roast Session</button>
+                            <div class="inventory-card__actions">
+                                <button type="button" class="primary-btn" id="open-roast-modal">Log Roast
+                                    Session</button>
+                                <button type="button" class="secondary-btn" id="open-stocktake-modal">Stock Take
+                                    Values</button>
+                            </div>
                         </section>
 
                         <% if (!rows.length) { %>
@@ -131,6 +136,50 @@
                                             <button type="submit" class="primary-btn">Log Roast Session</button>
                                         </div>
                                     </form>
+                                </dialog>
+
+                                <dialog id="stocktake-modal" class="inventory-modal">
+                                    <form method="dialog" class="inventory-modal__header">
+                                        <h3>Stock Take Values</h3>
+                                        <button type="submit" class="modal-close-btn" aria-label="Close">×</button>
+                                    </form>
+
+                                    <p class="inventory-hint">Stock take total is calculated as green inventory +
+                                        (roasted inventory ÷ 0.85) to convert roasted coffee back to green-equivalent
+                                        weight.</p>
+
+                                    <div class="table-wrap">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Coffee</th>
+                                                    <th>Stock Take Total (g)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% rows.forEach((row)=> { %>
+                                                    <% const coffeeName=row.coffees?.name ?? 'Unknown Coffee' ; %>
+                                                        <% const greenGrams=Number(row.green_inventory || 0); %>
+                                                            <% const roastedGrams=Number(row.roasted_inventory || 0); %>
+                                                                <% const stockTakeTotal=Math.round(greenGrams +
+                                                                    (roastedGrams / 0.85)); %>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <%= coffeeName %> (ID: <%= row.coffee %>)
+                                                                        </td>
+                                                                        <td>
+                                                                            <%= stockTakeTotal.toFixed(0) %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="inventory-modal__actions">
+                                        <button type="button" class="secondary-btn"
+                                            id="close-stocktake-modal">Close</button>
+                                    </div>
                                 </dialog>
                                 <% } %>
     </main>
