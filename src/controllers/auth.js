@@ -51,7 +51,15 @@ export const login = async (req, res) => {
             role: userRole,
         }
 
-        return res.redirect('/admin/orders')
+        return req.session.save((saveError) => {
+            if (saveError) {
+                return res.status(500).render('login', {
+                    error: 'Unable to persist session. Please try again.',
+                })
+            }
+
+            return res.redirect('/admin/orders')
+        })
     })
 }
 

@@ -17,6 +17,7 @@ import {
     renderOrdersDashboard,
     updateOrderStatus,
 } from './controllers/orders.js'
+import { logRoastSession, renderInventory } from './controllers/inventory.js'
 import { requireAdminAuth } from './utils/auth.js'
 
 const router = express.Router()
@@ -35,6 +36,10 @@ router.route('/admin/login').get(renderLogin).post(login)
 router.route('/admin/logout').post(logout)
 
 router.route('/admin/orders').get(requireAdminAuth, renderOrdersDashboard)
+router.route('/admin/inventory').get(requireAdminAuth, renderInventory)
+router
+    .route('/admin/inventory/roast-session')
+    .post(requireAdminAuth, logRoastSession)
 router.route('/admin/api/orders').get(requireAdminAuth, getFilteredOrders)
 router
     .route('/admin/orders/:orderId/status')

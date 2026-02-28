@@ -16,9 +16,12 @@
                 <h1>Orders Dashboard</h1>
                 <p>Retail Stripe orders and line items.</p>
             </div>
-            <form action="/admin/logout" method="POST">
-                <button type="submit" class="logout-btn">Log Out</button>
-            </form>
+            <div class="orders-header__actions">
+                <a href="/admin/inventory" class="header-link">Inventory</a>
+                <form action="/admin/logout" method="POST">
+                    <button type="submit" class="logout-btn">Log Out</button>
+                </form>
+            </div>
         </header>
 
         <% if (error) { %>

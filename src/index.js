@@ -51,9 +51,12 @@ app.use(
         secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
+        name: 'fourways.admin.sid',
         cookie: {
-            secure: process.env.NODE_ENV === 'production',
+            httpOnly: true,
+            secure: 'auto',
             sameSite: 'lax',
+            maxAge: 1000 * 60 * 60 * 24 * 7,
         },
     })
 )

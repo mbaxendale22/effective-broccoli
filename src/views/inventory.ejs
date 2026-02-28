@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+    <link href="/styles/inventory.css" rel="stylesheet">
+    <script src="/scripts/inventory.js" defer></script>
+</head>
+
+<body>
+    <main class="inventory-page">
+        <header class="inventory-header">
+            <div>
+                <h1>Inventory Tracker</h1>
+                <p>Current inventory and roast log records.</p>
+            </div>
+
+            <div class="inventory-header__actions">
+                <a href="/admin/orders" class="header-link">Orders</a>
+                <form action="/admin/logout" method="POST">
+                    <button type="submit" class="logout-btn">Log Out</button>
+                </form>
+            </div>
+        </header>
+
+        <% if (error) { %>
+            <p class="inventory-error">
+                <%= error %>
+            </p>
+            <% } %>
+
+                <% if (success) { %>
+                    <p class="inventory-success">
+                        <%= success %>
+                    </p>
+                    <% } %>
+
+                        <section class="inventory-card inventory-card--actions">
+                            <h2>Roast Sessions</h2>
+                            <button type="button" class="primary-btn" id="open-roast-modal">Log Roast Session</button>
+                        </section>
+
+                        <% if (!rows.length) { %>
+                            <p class="empty-state">No inventory records found.</p>
+                            <% } else { %>
+                                <section class="inventory-card">
+                                    <h2>Inventory Records</h2>
+                                    <div class="table-wrap">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Coffee</th>
+                                                    <th>Green (g)</th>
+                                                    <th>Roasted (g)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% rows.forEach((row)=> { %>
+                                                    <% const coffeeName=row.coffees?.name ?? 'Unknown Coffee' ; %>
+                                                        <% const greenGrams=Number(row.green_inventory || 0); %>
+                                                            <% const roastedGrams=Number(row.roasted_inventory || 0); %>
+                                                                <tr>
+                                                                    <td>
+                                                                        <%= row.id %>
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <%= coffeeName %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= greenGrams.toFixed(0) %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= roastedGrams.toFixed(0) %>
+                                                                    </td>
+                                                                </tr>
+                                                                <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </section>
+
+                                <dialog id="roast-session-modal" class="inventory-modal">
+                                    <form method="dialog" class="inventory-modal__header">
+                                        <h3>Log Roast Session</h3>
+                                        <button type="submit" class="modal-close-btn" aria-label="Close">×</button>
+                                    </form>
+
+                                    <p class="inventory-hint">Enter green coffee roasted in grams for one or more
+                                        coffees. Roasted inventory is automatically increased by 85% of the roasted
+                                        amount.</p>
+
+                                    <form action="/admin/inventory/roast-session" method="POST">
+                                        <div class="table-wrap">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Coffee</th>
+                                                        <th>Green Available (g)</th>
+                                                        <th>Roast This Session (g)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% rows.forEach((row)=> { %>
+                                                        <% const coffeeName=row.coffees?.name ?? 'Unknown Coffee' ; %>
+                                                            <% const greenGrams=Number(row.green_inventory || 0); %>
+                                                                <tr>
+                                                                    <td>
+                                                                        <%= coffeeName %> (ID: <%= row.coffee %>)
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= greenGrams.toFixed(0) %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input type="number" min="0" step="1"
+                                                                            name="roast_green_g_<%= row.id %>" value="0"
+                                                                            class="inline-input">
+                                                                    </td>
+                                                                </tr>
+                                                                <% }) %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="inventory-modal__actions">
+                                            <button type="button" class="secondary-btn"
+                                                id="close-roast-modal">Cancel</button>
+                                            <button type="submit" class="primary-btn">Log Roast Session</button>
+                                        </div>
+                                    </form>
+                                </dialog>
+                                <% } %>
+    </main>
+
+</body>
+
+</html>
