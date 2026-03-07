@@ -34,12 +34,14 @@
                             </p>
                             <div class="product-card__btn-container">
                                 <!-- take user to the product page -->
-                                <a href="/product/<%= item.stripe_price_id %>" class="modern-btn btn-1">More Info</a>
-                                <!-- run a js function to add to the cart session -->
-                                <button data-id="<%= item.stripe_price_id %>"
-                                    class="modern-btn btn-2 add-to-cart-btn">Add
-                                    to
-                                    cart</button>
+                                <a href="/product/<%= item.stripe_price_id %>" class="modern-btn more-info-btn">More
+                                    Info</a>
+                                <% if (!isWebstoreInMaintenance) { %>
+                                    <!-- run a js function to add to the cart session -->
+                                    <button data-id="<%= item.stripe_price_id %>" class="modern-btn add-to-cart-btn">Add
+                                        to
+                                        cart</button>
+                                    <% } %>
                             </div>
                         </div>
                         <div class="product-card__right">
@@ -80,12 +82,14 @@
                     <% }) %>
             </div>
 
-            <!-- Cart Drawer -->
-            <%- include('cart') %>
-                <%- include('partials/grind-modal') %>
+            <% if (!isWebstoreInMaintenance) { %>
+                <!-- Cart Drawer -->
+                <%- include('cart') %>
+                    <%- include('partials/grind-modal') %>
 
-                    <!-- Cart Overlay -->
-                    <div id="cart-overlay" class="cart-overlay"></div>
+                        <!-- Cart Overlay -->
+                        <div id="cart-overlay" class="cart-overlay"></div>
+                        <% } %>
         </main>
 
 </body>

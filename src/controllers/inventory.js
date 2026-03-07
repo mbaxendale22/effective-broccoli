@@ -1,4 +1,8 @@
-import { supabase } from '../config/supabase.js'
+import {
+    getInventoryByIds,
+    getInventoryWithCoffeeDetails,
+    updateInventoryById,
+} from '../api/inventory.js'
 
 const ROAST_YIELD_FACTOR = 0.85
 
@@ -36,22 +40,8 @@ const buildInventoryRedirect = ({ success, error }) => {
 }
 
 const getInventoryPageData = async () => {
-    const { data: inventoryRows, error: inventoryError } = await supabase
-        .from('inventory')
-        .select(
-            `
-            id,
-            created_at,
-            coffee,
-            green_inventory,
-            roasted_inventory,
-            coffees:coffees!inventory_coffee_fkey (
-                id,
-                name
-            )
-        `
-        )
-        .order('green_inventory', { ascending: false })
+    const { data: inventoryRows, error: inventoryError } =
+        await getInventoryWithCoffeeDetails()
 
     if (inventoryError) {
         throw inventoryError
@@ -107,10 +97,8 @@ export const logRoastSession = async (req, res) => {
 
     const inventoryIds = roastEntries.map((entry) => entry.inventoryId)
 
-    const { data: inventoryRows, error: loadError } = await supabase
-        .from('inventory')
-        .select('id, green_inventory, roasted_inventory')
-        .in('id', inventoryIds)
+    const { data: inventoryRows, error: loadError } =
+        await getInventoryByIds(inventoryIds)
 
     if (loadError) {
         console.error('Error loading inventory for roast session:', loadError)
@@ -153,13 +141,13 @@ export const logRoastSession = async (req, res) => {
         const currentRoasted = Number(inventoryRow.roasted_inventory || 0)
         const roastedAdded = Math.round(entry.greenUsed * ROAST_YIELD_FACTOR)
 
-        const { error: updateError } = await supabase
-            .from('inventory')
-            .update({
+        const { error: updateError } = await updateInventoryById(
+            entry.inventoryId,
+            {
                 green_inventory: currentGreen - entry.greenUsed,
                 roasted_inventory: currentRoasted + roastedAdded,
-            })
-            .eq('id', entry.inventoryId)
+            }
+        )
 
         if (updateError) {
             console.error(

@@ -11,17 +11,39 @@
     <script type="module" src="/scripts/home.js" defer></script>
 </head>
 
-<body class="wrapper">
+<body>
     <%- include('partials/navbar') %>
+        <main class="page-wrapper">
 
-        <div class="header__container">
-            <h1 class="headline-text">About Fourways Coffee Roasters</h1>
-            <p>Fourways is a nano-roastery focused on small-batch, limited coffee releases. We source thoughtfully and
-                roast to highlight clarity, sweetness, and origin character.</p>
-        </div>
+            <div class="header__container">
+                <h1 class="headline-text">About Fourways Coffee Roasters</h1>
+                <p class="about_text">Fourways is a nano-roastery. It is owned and operated by a single person - Matthew
+                    - and all coffee
+                    is roasted in micro batches. As a child, Matthew spend his summers at Fourways; his grandparents
+                    farm
+                    in
+                    County Antrim, Ireland. His grandmother was a baker and grandfather a welder - both professions
+                    combine
+                    artistry, technical skill, and machinery to create things for people. Matthew sees his love of
+                    coffee
+                    roasting as a continuation of this family tradition and a way to find meaning and community in the
+                    present through connecting with his past.</p>
+            </div>
 
-        <%- include('cart') %>
-            <div id="cart-overlay" class="cart-overlay"></div>
+            <div>
+                <h2></h2>
+                <p class="about_text">You can reach out by email at <a class="success-email__link"
+                        href="mailto:orders@fourways.coffee">orders@fourways.coffee</a> or through our <a
+                        class="success-email__link" href="https://www.instagram.com/fourwayscoffee"
+                        target="_blank">Instagram page where you can also keep up to date on new releases, events,
+                        and news</a>.</p>
+            </div>
+
+            <% if (!isWebstoreInMaintenance) { %>
+                <%- include('cart') %>
+                    <div id="cart-overlay" class="cart-overlay"></div>
+                    <% } %>
+        </main>
 </body>
 
 </html>

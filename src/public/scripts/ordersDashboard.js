@@ -4,7 +4,6 @@ const filterButtons = Array.from(document.querySelectorAll('.filter-btn'))
 
 const initialData = dataElement ? JSON.parse(dataElement.textContent) : null
 
-let allowedStatuses = initialData?.allowedStatuses || []
 let activeFilter = initialData?.selectedFilter || 'all'
 
 const formatCurrency = (amountPence) =>
@@ -69,13 +68,39 @@ const createOrderItemsMarkup = (items) => {
     `
 }
 
-const createStatusOptionsMarkup = (currentStatus) => {
-    return allowedStatuses
-        .map((statusOption) => {
-            const selected = currentStatus === statusOption ? 'selected' : ''
-            return `<option value="${statusOption}" ${selected}>${statusOption}</option>`
-        })
-        .join('')
+const createStatusActionsMarkup = (order) => {
+    const safeStatus = String(order.status || '').toLowerCase()
+
+    if (safeStatus === 'cancelled') {
+        return '<p class="status-note">No further actions available.</p>'
+    }
+
+    if (safeStatus === 'shipped') {
+        return `
+            <div class="status-actions">
+                <form action="/admin/orders/${order.id}/status" method="POST" class="status-form">
+                    <input type="hidden" name="status" value="cancelled">
+                    <input type="hidden" name="filter" value="${activeFilter}">
+                    <button type="submit" class="status-btn status-btn--cancel">Mark as cancelled</button>
+                </form>
+            </div>
+        `
+    }
+
+    return `
+        <div class="status-actions">
+            <form action="/admin/orders/${order.id}/status" method="POST" class="status-form">
+                <input type="hidden" name="status" value="shipped">
+                <input type="hidden" name="filter" value="${activeFilter}">
+                <button type="submit" class="status-btn status-btn--ship">Mark as shipped</button>
+            </form>
+            <form action="/admin/orders/${order.id}/status" method="POST" class="status-form">
+                <input type="hidden" name="status" value="cancelled">
+                <input type="hidden" name="filter" value="${activeFilter}">
+                <button type="submit" class="status-btn status-btn--cancel">Mark as cancelled</button>
+            </form>
+        </div>
+    `
 }
 
 const renderOrders = (orders, itemsByOrderId) => {
@@ -103,19 +128,13 @@ const renderOrders = (orders, itemsByOrderId) => {
                         <div>
                             <h2>Order #${order.id}</h2>
                             <p><strong>Created:</strong> ${new Date(order.created_at).toLocaleString()}</p>
+                            <p><strong>Status:</strong> ${order.status || 'N/A'}</p>
                             <p><strong>Customer:</strong> ${order.customer_email || 'N/A'}</p>
                             <p><strong>Shipping Name:</strong> ${order.shipping_name || 'N/A'}</p>
                             <p><strong>Shipping Address:</strong> ${formatAddress(order.shipping_address)}</p>
                             <p><strong>Total:</strong> ${formatCurrency(order.amount_total)}</p>
                         </div>
-                        <form action="/admin/orders/${order.id}/status" method="POST" class="status-form">
-                            <label for="status-${order.id}">Status</label>
-                            <select id="status-${order.id}" name="status" required>
-                                ${createStatusOptionsMarkup(order.status)}
-                            </select>
-                            <input type="hidden" name="filter" value="${activeFilter}">
-                            <button type="submit">Update</button>
-                        </form>
+                        ${createStatusActionsMarkup(order)}
                     </div>
                     <div class="order-items">
                         <h3>Line Items</h3>
@@ -164,8 +183,6 @@ const initializeFilters = () => {
 
             try {
                 const responseData = await fetchFilteredOrders(selectedFilter)
-                allowedStatuses =
-                    responseData.allowedStatuses || allowedStatuses
                 const normalizedFilter =
                     responseData.selectedFilter || selectedFilter
                 setActiveFilter(normalizedFilter)

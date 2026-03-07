@@ -12,8 +12,12 @@
     </div>
 
     <div class="site-nav__right">
-        <button class="site-nav__cart" id="cart-toggle" type="button">
-            CART (<span id="cart-count">0</span>)
-        </button>
+        <% if (isWebstoreInMaintenance) { %>
+            <span class="site-nav__maintenance">Store in maintenance</span>
+            <% } else { %>
+                <button class="site-nav__cart" id="cart-toggle" type="button">
+                    CART (<span id="cart-count">0</span>)
+                </button>
+                <% } %>
     </div>
 </nav>

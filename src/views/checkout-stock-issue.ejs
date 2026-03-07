@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Update Needed - Fourways</title>
+    <link href="/styles/home.css" rel="stylesheet">
+    <link href="/styles/navbar.css" rel="stylesheet">
+    <link href="/styles/cart.css" rel="stylesheet">
+    <script type="module" src="/scripts/home.js" defer></script>
+    <script type="module" src="/scripts/checkoutStockIssue.js" defer></script>
+</head>
+
+<body class="wrapper">
+    <%- include('partials/navbar') %>
+
+        <section class="header__container">
+            <h1 class="headline-text">Oh no!</h1>
+            <p>Some items in your cart no longer have enough bags available.</p>
+
+            <ul>
+                <% unavailableItems.forEach((item)=> { %>
+                    <li>
+                        <strong>
+                            <%= item.coffeeName %>
+                        </strong> — requested <%= item.requested %>, available <%= item.available %>
+                    </li>
+                    <% }) %>
+            </ul>
+
+            <p>Please adjust your cart quantities and try checkout again.</p>
+            <p>Thank you!</p>
+
+            <% if (!isWebstoreInMaintenance) { %>
+                <button type="button" id="open-cart-btn" class="modern-btn">Open Cart</button>
+                <% } %>
+        </section>
+
+        <% if (!isWebstoreInMaintenance) { %>
+            <%- include('cart') %>
+                <div id="cart-overlay" class="cart-overlay"></div>
+                <% } %>
+</body>
+
+</html>

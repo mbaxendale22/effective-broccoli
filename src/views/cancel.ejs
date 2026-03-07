@@ -19,8 +19,10 @@
             <p>Forgot to add something to your cart? Shop around then come back to pay!</p>
         </section>
 
-        <%- include('cart') %>
-            <div id="cart-overlay" class="cart-overlay"></div>
+        <% if (!isWebstoreInMaintenance) { %>
+            <%- include('cart') %>
+                <div id="cart-overlay" class="cart-overlay"></div>
+                <% } %>
 </body>
 
 </html>

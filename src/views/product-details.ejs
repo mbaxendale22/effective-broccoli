@@ -20,18 +20,26 @@
             <div class="product-details__container">
                 <div class="product-cards__container">
                     <!-- product card -->
-                    <div class="product-card__container" id="product-card__container">
-                        <div class="product-card__left">
-                            <p class="product-card__price">
-                                £<%= item.price_250 / 100 %>
-                            </p>
-                            <div class="product-card__btn-container">
-                                <!-- run a js function to add to the cart session -->
-                                <button data-id="<%= item.stripe_price_id %>"
-                                    class="modern-btn btn-2 add-to-cart-btn">Add
-                                    to
-                                    cart</button>
-                            </div>
+                    <div class="product-card__container product-details__product-card-container"
+                        id="product-card__container">
+                        <div class="product-details__product-card__left">
+                            <% const availableBags=Number.isInteger(item.retail_available) ? item.retail_available : 0;
+                                %>
+                                <% const canPurchaseRetail=availableBags> 0 && !isWebstoreInMaintenance; %>
+                                    <p class="product-card__stock">
+                                        <%= isWebstoreInMaintenance ? 'Temporarily unavailable during maintenance' :
+                                            canPurchaseRetail ? `${availableBags} bags left` : 'Out of stock' %>
+                                    </p>
+                                    <p class="product-card__price">
+                                        £<%= item.price_250 / 100 %>
+                                    </p>
+                                    <div class="product-card__btn-container">
+                                        <!-- run a js function to add to the cart session -->
+                                        <button data-id="<%= item.stripe_price_id %>" class="modern-btn add-to-cart-btn"
+                                            <%=canPurchaseRetail ? '' : 'disabled' %>>
+                                            <%= canPurchaseRetail ? 'Add to cart' : 'Unavailable' %>
+                                        </button>
+                                    </div>
                         </div>
                         <div class="product-card__right">
                             <div class="product-card__text-container">
@@ -98,11 +106,13 @@
 
 
             <!-- Cart Drawer -->
-            <%- include('cart') %>
-                <%- include('partials/grind-modal') %>
+            <% if (!isWebstoreInMaintenance) { %>
+                <%- include('cart') %>
+                    <%- include('partials/grind-modal') %>
 
-                    <!-- Cart Overlay -->
-                    <div id="cart-overlay" class="cart-overlay"></div>
+                        <!-- Cart Overlay -->
+                        <div id="cart-overlay" class="cart-overlay"></div>
+                        <% } %>
         </main>
 </body>
 

@@ -2,8 +2,8 @@ import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import bodyParser from 'body-parser'
-import { supabase } from './config/supabase.js'
 // import cookieParser from 'cookie-parser'
+import { getCurrentWebstoreStatus } from './api/operationalStatus.js'
 
 import router from './router.js'
 import dotenv from 'dotenv'
@@ -72,6 +72,13 @@ app.use((req, res, next) => {
 // request logger
 app.use((req, _res, next) => {
     console.log(`incoming ${req.method} request to ${req.url}`)
+    next()
+})
+
+app.use(async (_req, res, next) => {
+    const webstoreStatus = await getCurrentWebstoreStatus()
+    res.locals.webstoreStatus = webstoreStatus
+    res.locals.isWebstoreInMaintenance = webstoreStatus === 'MAINTENANCE'
     next()
 })
 

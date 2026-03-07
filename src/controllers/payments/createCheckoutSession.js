@@ -1,5 +1,6 @@
 import { stripe } from '../../config/stripe.js'
-import { supabase } from '../../config/supabase.js'
+import { getCoffeesByStripePriceIds } from '../../api/coffees.js'
+import { getCurrentWebstoreStatus } from '../../api/operationalStatus.js'
 
 const serializeCartSnapshot = (cart) =>
     cart
@@ -32,7 +33,29 @@ const aggregateCartForStripe = (cart) => {
     )
 }
 
+export const renderCheckoutStockIssue = (req, res) => {
+    const unavailableItems = req.session?.checkoutStockIssue || []
+
+    if (!unavailableItems.length) {
+        return res.redirect('/')
+    }
+
+    req.session.checkoutStockIssue = null
+
+    return req.session.save(() => {
+        res.render('checkout-stock-issue', {
+            unavailableItems,
+        })
+    })
+}
+
 export const createCheckoutSession = async (req, res) => {
+    const webstoreStatus = await getCurrentWebstoreStatus()
+
+    if (webstoreStatus === 'MAINTENANCE') {
+        return res.redirect('/maintenance')
+    }
+
     const cart = req.session.cart
 
     if (!cart || cart.length === 0) {
@@ -47,10 +70,8 @@ export const createCheckoutSession = async (req, res) => {
 
     const coffeeIds = aggregatedCartItems.map((item) => item.coffeeId)
 
-    const { data: coffees, error: coffeesError } = await supabase
-        .from('coffees')
-        .select('*')
-        .in('stripe_price_id', coffeeIds)
+    const { data: coffees, error: coffeesError } =
+        await getCoffeesByStripePriceIds(coffeeIds)
 
     if (coffeesError) {
         console.error('Error loading coffees for checkout:', coffeesError)
@@ -61,6 +82,44 @@ export const createCheckoutSession = async (req, res) => {
         acc[coffee.stripe_price_id] = coffee
         return acc
     }, {})
+
+    const unavailableItems = aggregatedCartItems
+        .map((cartItem) => {
+            const coffee = coffeesByStripePriceId[cartItem.coffeeId]
+
+            if (!coffee) {
+                return {
+                    coffeeId: cartItem.coffeeId,
+                    coffeeName: 'Unknown coffee',
+                    requested: cartItem.quantity,
+                    available: 0,
+                }
+            }
+
+            const availableBags = Number.isInteger(coffee.retail_available)
+                ? coffee.retail_available
+                : 0
+
+            if (availableBags < cartItem.quantity) {
+                return {
+                    coffeeId: cartItem.coffeeId,
+                    coffeeName: coffee.name,
+                    requested: cartItem.quantity,
+                    available: availableBags,
+                }
+            }
+
+            return null
+        })
+        .filter(Boolean)
+
+    if (unavailableItems.length > 0) {
+        req.session.checkoutStockIssue = unavailableItems
+
+        return req.session.save(() => {
+            res.redirect('/checkout-stock-issue')
+        })
+    }
 
     const line_items = aggregatedCartItems
         .map((cartItem) => {

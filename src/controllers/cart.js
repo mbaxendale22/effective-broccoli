@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.js'
+import { getCoffeesByStripePriceIds } from '../api/coffees.js'
 
 const ALLOWED_GRINDS = ['whole_beans', 'filter', 'espresso']
 
@@ -79,10 +79,7 @@ export const renderCart = async (req, res) => {
 
     const coffeeIds = cart.map((item) => item.coffeeId)
 
-    const { data: coffees, error } = await supabase
-        .from('coffees')
-        .select('*')
-        .in('stripe_price_id', coffeeIds)
+    const { data: coffees, error } = await getCoffeesByStripePriceIds(coffeeIds)
 
     if (error) {
         console.error(error)
@@ -120,10 +117,7 @@ export const getCartData = async (req, res) => {
 
     const coffeeIds = cart.map((item) => item.coffeeId)
 
-    const { data: coffees, error } = await supabase
-        .from('coffees')
-        .select('*')
-        .in('stripe_price_id', coffeeIds)
+    const { data: coffees, error } = await getCoffeesByStripePriceIds(coffeeIds)
 
     if (error) {
         console.error(error)

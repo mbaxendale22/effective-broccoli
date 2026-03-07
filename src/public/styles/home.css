@@ -1,3 +1,11 @@
+:root {
+    --primary-color: #111111;
+    --secondary-color: #496f48;
+    --background-color: #111010;
+    --accent-green: #496f48;
+    --accent-blue: #4867cc;
+}
+
 html {
     font-size: 16px;
     box-sizing: border-box;
@@ -15,6 +23,8 @@ html {
 .page-wrapper {
     max-width: 750px;
     margin: 0 auto;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
 }
 
 .product-cards__container {
@@ -42,6 +52,21 @@ html {
     padding-top: 1.5rem;
 }
 
+.product-details__product-card-container:hover {
+    transform: translateY(0px);
+}
+.product-details__product-card__left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 0.5rem;
+    p {
+        margin: 0;
+    }
+}
+
 .modern-btn {
     padding: 12px 24px;
     font-size: 16px;
@@ -51,53 +76,29 @@ html {
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
     position: relative;
     overflow: hidden;
 }
 
-.modern-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
-}
-
-/* .modern-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
-} */
-
-/* Optional subtle shine effect */
-/* .modern-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        120deg,
-        rgba(255, 255, 255, 0.2),
-        rgba(255, 255, 255, 0.4),
-        rgba(255, 255, 255, 0.2)
-    );
-    transition: all 0.6s ease;
-} */
-
-/* .modern-btn:hover::before {
-    left: 100%;
-} */
-
-.btn-1 {
+.more-info-btn {
     background: #111111;
     text-decoration: none;
 }
+.more-info-btn:hover {
+    background-color: var(--accent-blue);
+}
 
-.btn-2 {
+.add-to-cart-btn {
     background: transparent;
     color: #111111;
     border: 1.5px solid #111111;
 }
 
+.add-to-cart-btn:hover {
+    background-color: var(--accent-green);
+    color: white;
+    border: none;
+}
 .product-card__price {
     font-size: 24px;
     text-align: center;
@@ -172,4 +173,14 @@ html {
 
 .cart-indicator:hover {
     background-color: rgba(0, 0, 0, 0.9);
+}
+
+.about_text {
+    text-align: left;
+}
+
+.success-email__link {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
 }

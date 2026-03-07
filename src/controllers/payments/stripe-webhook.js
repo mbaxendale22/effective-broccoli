@@ -1,5 +1,15 @@
 import { stripe } from '../../config/stripe.js'
-import { supabase } from '../../config/supabase.js'
+import {
+    getCoffeeRetailAvailabilityByStripeId,
+    getCoffeesForWebhookByStripeIds,
+    updateCoffeeRetailAvailability,
+} from '../../api/coffees.js'
+import {
+    countOrderItemsByOrderId,
+    getOrderByStripeSessionId,
+    insertOrderItems,
+    insertProcessingOrder,
+} from '../../api/orders.js'
 
 const parseCartSnapshot = (snapshot) => {
     if (!snapshot || typeof snapshot !== 'string') {
@@ -21,6 +31,86 @@ const parseCartSnapshot = (snapshot) => {
             return { coffeeId, quantity, grind }
         })
         .filter(Boolean)
+}
+
+const aggregateQuantitiesByCoffeeId = (items) =>
+    items.reduce((acc, item) => {
+        const coffeeId = item?.coffeeId
+        const quantity = Number(item?.quantity) || 0
+
+        if (!coffeeId || quantity <= 0) {
+            return acc
+        }
+
+        acc[coffeeId] = (acc[coffeeId] || 0) + quantity
+        return acc
+    }, {})
+
+const decrementRetailAvailability = async (quantitiesByCoffeeId) => {
+    const coffeeIds = Object.keys(quantitiesByCoffeeId)
+
+    if (!coffeeIds.length) {
+        return
+    }
+
+    for (const coffeeId of coffeeIds) {
+        const requested = Number(quantitiesByCoffeeId[coffeeId]) || 0
+
+        if (requested <= 0) {
+            continue
+        }
+
+        let decremented = false
+
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+            const { data: coffee, error: coffeeError } =
+                await getCoffeeRetailAvailabilityByStripeId(coffeeId)
+
+            if (coffeeError) {
+                throw coffeeError
+            }
+
+            if (!coffee) {
+                throw new Error(
+                    `Unable to locate coffee for stripe price ${coffeeId}`
+                )
+            }
+
+            const currentAvailable = Number.isInteger(coffee.retail_available)
+                ? coffee.retail_available
+                : 0
+
+            if (currentAvailable < requested) {
+                throw new Error(
+                    `Insufficient retail availability for ${coffee.name}. Requested ${requested}, available ${currentAvailable}.`
+                )
+            }
+
+            const nextAvailable = currentAvailable - requested
+
+            const { data: updatedRows, error: updateError } =
+                await updateCoffeeRetailAvailability({
+                    stripePriceId: coffeeId,
+                    nextAvailable,
+                    currentAvailable,
+                })
+
+            if (updateError) {
+                throw updateError
+            }
+
+            if (updatedRows && updatedRows.length > 0) {
+                decremented = true
+                break
+            }
+        }
+
+        if (!decremented) {
+            throw new Error(
+                `Unable to decrement retail availability for ${coffeeId} after concurrent updates.`
+            )
+        }
+    }
 }
 
 export const handleStripeWebhook = async (req, res) => {
@@ -51,11 +141,27 @@ export const handleStripeWebhook = async (req, res) => {
         // ✅ Fulfill order here
         // Save to database
         try {
-            // 1️⃣ Insert order (idempotent)
-            const { data: order, error: orderError } = await supabase
-                .from('orders')
-                .insert([
-                    {
+            let order = null
+
+            const { data: existingOrder, error: existingOrderError } =
+                await getOrderByStripeSessionId(session.id)
+
+            if (existingOrderError) {
+                throw existingOrderError
+            }
+
+            if (existingOrder) {
+                if (
+                    existingOrder.status === 'shipped' ||
+                    existingOrder.status === 'cancelled'
+                ) {
+                    return res.json({ received: true })
+                }
+
+                order = existingOrder
+            } else {
+                const { data: insertedOrder, error: insertOrderError } =
+                    await insertProcessingOrder({
                         stripe_session_id: session.id,
                         stripe_payment_intent_id: session.payment_intent,
                         customer_email: customerDetails?.email,
@@ -65,19 +171,40 @@ export const handleStripeWebhook = async (req, res) => {
                         amount_shipping: session.total_details?.amount_shipping,
                         amount_total: session.amount_total,
                         currency: session.currency,
-                        status: 'paid',
-                    },
-                ])
-                .select()
-                .single()
+                        status: 'processing',
+                    })
 
-            // If duplicate (webhook retry)
-            if (orderError && orderError.code === '23505') {
-                return res.json({ received: true })
+                if (insertOrderError && insertOrderError.code === '23505') {
+                    const { data: duplicateOrder, error: duplicateOrderError } =
+                        await getOrderByStripeSessionId(session.id)
+
+                    if (duplicateOrderError) {
+                        throw duplicateOrderError
+                    }
+
+                    if (!duplicateOrder) {
+                        throw new Error(
+                            'Order duplicate detected but existing order was not found.'
+                        )
+                    }
+
+                    if (
+                        duplicateOrder.status === 'shipped' ||
+                        duplicateOrder.status === 'cancelled'
+                    ) {
+                        return res.json({ received: true })
+                    }
+
+                    order = duplicateOrder
+                } else if (insertOrderError) {
+                    throw insertOrderError
+                } else {
+                    order = insertedOrder
+                }
             }
 
-            if (orderError) {
-                throw orderError
+            if (!order) {
+                throw new Error('Unable to load or create order for webhook.')
             }
 
             const cartSnapshotItems = parseCartSnapshot(
@@ -91,10 +218,8 @@ export const handleStripeWebhook = async (req, res) => {
                     (item) => item.coffeeId
                 )
 
-                const { data: coffees, error: coffeesError } = await supabase
-                    .from('coffees')
-                    .select('stripe_price_id,name,price_250')
-                    .in('stripe_price_id', snapshotCoffeeIds)
+                const { data: coffees, error: coffeesError } =
+                    await getCoffeesForWebhookByStripeIds(snapshotCoffeeIds)
 
                 if (coffeesError) {
                     throw coffeesError
@@ -145,13 +270,33 @@ export const handleStripeWebhook = async (req, res) => {
                 }))
             }
 
-            const { error: itemsError } = await supabase
-                .from('order_items')
-                .insert(orderItemsToInsert)
+            const quantitiesByCoffeeId =
+                cartSnapshotItems.length > 0
+                    ? aggregateQuantitiesByCoffeeId(cartSnapshotItems)
+                    : aggregateQuantitiesByCoffeeId(
+                          orderItemsToInsert.map((item) => ({
+                              coffeeId: item.stripe_price_id,
+                              quantity: item.quantity,
+                          }))
+                      )
 
-            if (itemsError) {
-                console.log('error saving line items to db')
-                throw itemsError
+            const { count: existingItemCount, error: existingItemsError } =
+                await countOrderItemsByOrderId(order.id)
+
+            if (existingItemsError) {
+                throw existingItemsError
+            }
+
+            if (!existingItemCount) {
+                const { error: itemsError } =
+                    await insertOrderItems(orderItemsToInsert)
+
+                if (itemsError) {
+                    console.log('error saving line items to db')
+                    throw itemsError
+                }
+
+                await decrementRetailAvailability(quantitiesByCoffeeId)
             }
 
             console.log('Order saved to Supabase ☕')

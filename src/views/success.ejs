@@ -11,16 +11,22 @@
     <script type="module" src="/scripts/home.js" defer></script>
 </head>
 
-<body class="wrapper">
+<body>
     <%- include('partials/navbar') %>
+        <main class="page-wrapper">
+            <div class="header__container">
+                <h1 class="headline-text">Order Successful!</h1>
+                <p>Thanks so much for your order! Your payment confirmation will be sent to your email shortly and
+                    you'll be
+                    updated when your coffee has shipped. Any questions? Reach out at <a class="success-email__link"
+                        href="mailto:orders@fourways.coffee">orders@fourways.coffee</a></p>
+            </div>
 
-        <div class="header__container">
-            <h1 class="headline-text">Payment complete</h1>
-            <p>Thanks for your order. Your cart has been cleared and your coffee is being prepared.</p>
-        </div>
-
-        <%- include('cart') %>
-            <div id="cart-overlay" class="cart-overlay"></div>
+            <% if (!isWebstoreInMaintenance) { %>
+                <%- include('cart') %>
+                    <div id="cart-overlay" class="cart-overlay"></div>
+                    <% } %>
+        </main>
 </body>
 
 </html>

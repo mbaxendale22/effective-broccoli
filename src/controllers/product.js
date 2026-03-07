@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.js'
+import { getCoffeeByStripePriceId } from '../api/coffees.js'
 
 export const renderProductDetails = async (req, res) => {
     try {
@@ -12,11 +12,8 @@ export const renderProductDetails = async (req, res) => {
 
         const normalizedProductId = productId.trim()
 
-        const { data: item, error } = await supabase
-            .from('coffees')
-            .select('*')
-            .eq('stripe_price_id', normalizedProductId)
-            .maybeSingle()
+        const { data: item, error } =
+            await getCoffeeByStripePriceId(normalizedProductId)
 
         if (error) {
             console.error('Error fetching product details from Supabase:', {

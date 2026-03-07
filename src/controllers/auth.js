@@ -1,4 +1,4 @@
-import { supabaseAuth } from '../config/supabase.js'
+import { signInAdminWithPassword, signOutAdminAuthClient } from '../api/auth.js'
 
 export const renderLogin = (req, res) => {
     if (req.session?.isAdminAuthenticated) {
@@ -17,7 +17,7 @@ export const login = async (req, res) => {
         })
     }
 
-    const { data, error } = await supabaseAuth.auth.signInWithPassword({
+    const { data, error } = await signInAdminWithPassword({
         email,
         password,
     })
@@ -31,7 +31,7 @@ export const login = async (req, res) => {
     const userRole = data.user.user_metadata?.role
 
     if (userRole !== 'admin') {
-        await supabaseAuth.auth.signOut()
+        await signOutAdminAuthClient()
         return res.status(403).render('login', {
             error: 'This user is not authorized for the admin dashboard.',
         })

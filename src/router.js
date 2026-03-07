@@ -1,6 +1,9 @@
 import express from 'express'
 import { handleStripeWebhook } from './controllers/payments/stripe-webhook.js'
-import { createCheckoutSession } from './controllers/payments/createCheckoutSession.js'
+import {
+    createCheckoutSession,
+    renderCheckoutStockIssue,
+} from './controllers/payments/createCheckoutSession.js'
 import {
     addToCart,
     renderCart,
@@ -24,6 +27,7 @@ const router = express.Router()
 
 router.route('/').get(renderHome)
 router.route('/about').get((req, res) => res.render('about'))
+router.route('/maintenance').get((req, res) => res.render('maintenance'))
 router.route('/product/:productId').get(renderProductDetails)
 router.route('/success').get((req, res) => {
     // empty cart after successful checkout
@@ -31,6 +35,7 @@ router.route('/success').get((req, res) => {
     res.render('success')
 })
 router.route('/cancel').get((req, res) => res.render('cancel'))
+router.route('/checkout-stock-issue').get(renderCheckoutStockIssue)
 
 router.route('/admin/login').get(renderLogin).post(login)
 router.route('/admin/logout').post(logout)
