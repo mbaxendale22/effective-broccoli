@@ -8,6 +8,7 @@
     <link href="/styles/home.css" rel="stylesheet">
     <link href="/styles/navbar.css" rel="stylesheet">
     <link href="/styles/cart.css" rel="stylesheet">
+    <link href="/styles/footer.css" rel="stylesheet">
     <script type="module" src="/scripts/home.js" defer></script>
     <script type="module" src="/scripts/productCard.js"></script>
 
@@ -67,42 +68,38 @@
                             </div>
                             <div class="product-card__logo-container">
                                 <div class="product-card__logo"></div>
-
-
                             </div>
-
-
                         </div>
-
                     </div>
                 </div>
             </div>
+            <section class="product-details__main-text">
+                <h2>What do you need to know</h2>
+                <p>
+                    <%= item.description_summary %>
+                </p>
 
-            <h2>What do you need to know</h2>
-            <p>
-                <%= item.description_summary %>
-            </p>
+                <h2>The process</h2>
+                <p>
+                    <%= item.description_process %>
+                </p>
 
-            <h3>The process</h3>
-            <p>
-                <%= item.description_process %>
-            </p>
+                <h2>The producer</h2>
+                <p>
+                    <%= item.description_producer %>
+                </p>
 
-            <h3>The producer</h3>
-            <p>
-                <%= item.description_producer %>
-            </p>
+                <h2>The cultivars</h2>
+                <p>
+                    <%= item.description_cultivars %>
+                </p>
 
-            <h3>The cultivars</h3>
-            <p>
-                <%= item.description_cultivars %>
-            </p>
+                <h2>Any other business</h2>
+                <p>
+                    <%= item.description_other %>
+                </p>
 
-            <h3>Any other business</h3>
-            <p>
-                <%= item.description_other %>
-            </p>
-
+            </section>
 
 
             <!-- Cart Drawer -->
@@ -114,6 +111,7 @@
                         <div id="cart-overlay" class="cart-overlay"></div>
                         <% } %>
         </main>
+        <%- include('partials/footer') %>
 </body>
 
 </html>

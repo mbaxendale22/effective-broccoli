@@ -27,6 +27,7 @@ const router = express.Router()
 
 router.route('/').get(renderHome)
 router.route('/about').get((req, res) => res.render('about'))
+router.route('/privacy-policy').get((req, res) => res.render('privacy-policy'))
 router.route('/maintenance').get((req, res) => res.render('maintenance'))
 router.route('/product/:productId').get(renderProductDetails)
 router.route('/success').get((req, res) => {

@@ -8,6 +8,7 @@
     <link href="/styles/home.css" rel="stylesheet">
     <link href="/styles/navbar.css" rel="stylesheet">
     <link href="/styles/cart.css" rel="stylesheet">
+    <link href="/styles/footer.css" rel="stylesheet">
     <script type="module" src="/scripts/home.js" defer></script>
 </head>
 
@@ -16,8 +17,8 @@
         <main class="page-wrapper">
 
             <div class="header__container">
-                <h1 class="headline-text">About Fourways Coffee Roasters</h1>
-                <p class="about_text">Fourways is a nano-roastery. It is owned and operated by a single person - Matthew
+                <h1>About Fourways Coffee Roasters</h1>
+                <p>Fourways is a nano-roastery. It is owned and operated by a single person - Matthew
                     - and all coffee
                     is roasted in micro batches. As a child, Matthew spend his summers at Fourways; his grandparents
                     farm
@@ -30,13 +31,14 @@
                     present through connecting with his past.</p>
             </div>
 
-            <div>
-                <h2></h2>
+            <div class="header__container">
+                <h2>Contact</h2>
                 <p class="about_text">You can reach out by email at <a class="success-email__link"
                         href="mailto:orders@fourways.coffee">orders@fourways.coffee</a> or through our <a
                         class="success-email__link" href="https://www.instagram.com/fourwayscoffee"
-                        target="_blank">Instagram page where you can also keep up to date on new releases, events,
-                        and news</a>.</p>
+                        target="_blank">Instagram</a>
+                    page where you can also keep up to date on new releases, events,
+                    and news</p>
             </div>
 
             <% if (!isWebstoreInMaintenance) { %>
@@ -44,6 +46,7 @@
                     <div id="cart-overlay" class="cart-overlay"></div>
                     <% } %>
         </main>
+        <%- include('partials/footer') %>
 </body>
 
 </html>

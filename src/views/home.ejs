@@ -8,6 +8,7 @@
     <link href="/styles/home.css" rel="stylesheet">
     <link href="/styles/navbar.css" rel="stylesheet">
     <link href="/styles/cart.css" rel="stylesheet">
+    <link href="/styles/footer.css" rel="stylesheet">
     <script type="module" src="/scripts/home.js"></script>
     <script type="module" src="/scripts/productCard.js"></script>
 </head>
@@ -35,7 +36,7 @@
                             <div class="product-card__btn-container">
                                 <!-- take user to the product page -->
                                 <a href="/product/<%= item.stripe_price_id %>" class="modern-btn more-info-btn">More
-                                    Info</a>
+                                    info</a>
                                 <% if (!isWebstoreInMaintenance) { %>
                                     <!-- run a js function to add to the cart session -->
                                     <button data-id="<%= item.stripe_price_id %>" class="modern-btn add-to-cart-btn">Add
@@ -66,17 +67,11 @@
                                         <%= item.variety %>
                                     </p>
                                 </div>
-
                             </div>
                             <div class="product-card__logo-container">
                                 <div class="product-card__logo"></div>
-
-
                             </div>
-
-
                         </div>
-
                     </div>
 
                     <% }) %>
@@ -91,6 +86,7 @@
                         <div id="cart-overlay" class="cart-overlay"></div>
                         <% } %>
         </main>
+        <%- include('partials/footer') %>
 
 </body>
 
