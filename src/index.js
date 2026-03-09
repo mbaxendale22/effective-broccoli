@@ -36,6 +36,7 @@ if (missingEnvVars.length > 0) {
     )
 }
 
+// ...existing code...
 const createSessionStore = async () => {
     if (!process.env.REDIS_URL) {
         console.warn(
@@ -44,8 +45,17 @@ const createSessionStore = async () => {
         return null
     }
 
+    const redisUrl = process.env.REDIS_URL
+    const useTls = redisUrl.startsWith('rediss://')
+
     const redisClient = createClient({
-        url: process.env.REDIS_URL,
+        url: redisUrl,
+        socket: useTls
+            ? {
+                  tls: true,
+                  rejectUnauthorized: false,
+              }
+            : undefined,
     })
 
     redisClient.on('error', (error) => {
