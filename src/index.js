@@ -104,6 +104,28 @@ const limiter = rateLimit({
 const cspPolicy = `default-src ${defaultSrc}; script-src ${defaultSrc}; style-src ${defaultSrc} https://fonts.googleapis.com; img-src ${defaultSrc} https://i.postimg.cc data:; font-src https://fonts.gstatic.com ${defaultSrc} data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none';`
 app.set('trust proxy', 1)
 
+const normalizeBaseUrl = (value) => {
+    if (!value || typeof value !== 'string') {
+        return null
+    }
+
+    const trimmedValue = value.trim()
+
+    if (!trimmedValue) {
+        return null
+    }
+
+    if (/^https?:\/\//i.test(trimmedValue)) {
+        return trimmedValue.replace(/\/+$/, '')
+    }
+
+    return `https://${trimmedValue}`.replace(/\/+$/, '')
+}
+
+const configuredBaseUrl = normalizeBaseUrl(
+    process.env.PUBLIC_BASE_URL || ROOT_DOMAIN
+)
+
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, STATIC_DIR)))
@@ -143,6 +165,22 @@ app.use((req, res, next) => {
 // request logger
 app.use((req, _res, next) => {
     console.log(`incoming ${req.method} request to ${req.url}`)
+    next()
+})
+
+app.use((req, res, next) => {
+    const requestBaseUrl = `${req.protocol}://${req.get('host')}`
+    const baseUrl = configuredBaseUrl || requestBaseUrl
+    const canonicalPath = req.path === '/' ? '/' : req.path.replace(/\/+$/, '')
+
+    res.locals.seo = {
+        title: 'Fourways Coffee Roasters',
+        description:
+            'Small-batch specialty coffee from Fourways. Explore current releases, producer details, and order online.',
+        canonicalUrl: `${baseUrl}${canonicalPath}`,
+        robots: 'index,follow',
+    }
+
     next()
 })
 

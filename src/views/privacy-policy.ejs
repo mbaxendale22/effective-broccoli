@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - Fourways</title>
+    <title>
+        <%= seo?.title || 'Privacy Policy - Fourways' %>
+    </title>
+    <meta name="description" content="<%= seo?.description || 'Privacy policy for Fourways Coffee Roasters.' %>">
+    <link rel="canonical" href="<%= seo?.canonicalUrl %>">
+    <meta name="robots" content="<%= seo?.robots || 'index,follow' %>">
     <link href="/styles/home.css" rel="stylesheet">
     <link href="/styles/navbar.css" rel="stylesheet">
     <link href="/styles/footer.css" rel="stylesheet">

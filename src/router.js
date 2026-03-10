@@ -1,5 +1,6 @@
 import express from 'express'
 import { handleStripeWebhook } from './controllers/payments/stripe-webhook.js'
+import { getAllActiveCoffees } from './api/coffees.js'
 import {
     createCheckoutSession,
     renderCheckoutStockIssue,
@@ -25,17 +26,110 @@ import { requireAdminAuth } from './utils/auth.js'
 
 const router = express.Router()
 
+router.route('/robots.txt').get((req, res) => {
+    const requestBaseUrl = `${req.protocol}://${req.get('host')}`
+    const sitemapUrl = `${requestBaseUrl}/sitemap.xml`
+
+    res.type('text/plain').send(`User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /cart
+Disallow: /create-checkout-session
+Disallow: /checkout-stock-issue
+Disallow: /success
+Disallow: /cancel
+
+Sitemap: ${sitemapUrl}
+`)
+})
+
+router.route('/sitemap.xml').get(async (req, res, next) => {
+    try {
+        const requestBaseUrl = `${req.protocol}://${req.get('host')}`
+        const nowIso = new Date().toISOString()
+        const coffees = await getAllActiveCoffees()
+
+        const staticPaths = ['/', '/about', '/privacy-policy']
+        const productPaths = coffees.map(
+            (coffee) => `/product/${encodeURIComponent(coffee.stripe_price_id)}`
+        )
+
+        const allPaths = [...staticPaths, ...productPaths]
+        const urlItems = allPaths
+            .map(
+                (path) => `<url>
+  <loc>${requestBaseUrl}${path}</loc>
+  <lastmod>${nowIso}</lastmod>
+</url>`
+            )
+            .join('\n')
+
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urlItems}
+</urlset>`
+
+        res.type('application/xml').send(xml)
+    } catch (error) {
+        next(error)
+    }
+})
+
 router.route('/').get(renderHome)
-router.route('/about').get((req, res) => res.render('about'))
-router.route('/privacy-policy').get((req, res) => res.render('privacy-policy'))
-router.route('/maintenance').get((req, res) => res.render('maintenance'))
+router.route('/about').get((req, res) => {
+    res.render('about', {
+        seo: {
+            ...res.locals.seo,
+            title: 'About Fourways Coffee Roasters',
+            description:
+                'Learn about Fourways Coffee Roasters, our approach to small-batch roasting, and how to get in touch.',
+        },
+    })
+})
+router.route('/privacy-policy').get((req, res) => {
+    res.render('privacy-policy', {
+        seo: {
+            ...res.locals.seo,
+            title: 'Privacy Policy | Fourways Coffee Roasters',
+            description:
+                'Read the Fourways Coffee Roasters privacy policy and how personal data is handled.',
+        },
+    })
+})
+router.route('/maintenance').get((req, res) => {
+    res.render('maintenance', {
+        seo: {
+            ...res.locals.seo,
+            title: 'Maintenance | Fourways Coffee Roasters',
+            description:
+                'Fourways Coffee Roasters webstore maintenance updates and temporary availability information.',
+            robots: 'noindex,nofollow',
+        },
+    })
+})
 router.route('/product/:productId').get(renderProductDetails)
 router.route('/success').get((req, res) => {
     // empty cart after successful checkout
     req.session.cart = []
-    res.render('success')
+    res.render('success', {
+        seo: {
+            ...res.locals.seo,
+            title: 'Order Success | Fourways Coffee Roasters',
+            description: 'Checkout completed successfully at Fourways.',
+            robots: 'noindex,nofollow',
+        },
+    })
 })
-router.route('/cancel').get((req, res) => res.render('cancel'))
+router.route('/cancel').get((req, res) => {
+    res.render('cancel', {
+        seo: {
+            ...res.locals.seo,
+            title: 'Checkout Canceled | Fourways Coffee Roasters',
+            description: 'Checkout canceled at Fourways.',
+            robots: 'noindex,nofollow',
+        },
+    })
+})
 router.route('/checkout-stock-issue').get(renderCheckoutStockIssue)
 
 router.route('/admin/login').get(renderLogin).post(login)

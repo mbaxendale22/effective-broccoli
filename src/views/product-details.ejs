@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - Fourways</title>
+    <title>
+        <%= seo?.title || 'Product Details - Fourways' %>
+    </title>
+    <meta name="description" content="<%= seo?.description || 'Small-batch specialty coffee from Fourways.' %>">
+    <link rel="canonical" href="<%= seo?.canonicalUrl %>">
+    <meta name="robots" content="<%= seo?.robots || 'index,follow' %>">
     <link href="/styles/home.css" rel="stylesheet">
     <link href="/styles/navbar.css" rel="stylesheet">
     <link href="/styles/cart.css" rel="stylesheet">
