@@ -24,8 +24,9 @@ html {
 .page-wrapper {
     max-width: 750px;
     margin: 0 auto;
-    padding-top: 1rem;
-    padding-bottom: 2rem;
+    /* padding-top: 1rem; */
+    /* padding-bottom: 2rem; */
+    padding: 1rem 1rem 2rem 1rem;
 }
 
 .product-cards__container {
