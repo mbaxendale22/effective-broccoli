@@ -22,6 +22,11 @@
                 <p>Fourways is a nano-roastery that puts out limited releases and roasts in small batches. Check out our
                     latest
                     releases below:</p>
+                <% if (webstoreStatusMessage) { %>
+                    <p>
+                        <%= webstoreStatusMessage %>
+                    </p>
+                    <% } %>
             </div>
             <div class="product-cards__container">
 

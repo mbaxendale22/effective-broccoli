@@ -3,7 +3,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import bodyParser from 'body-parser'
 // import cookieParser from 'cookie-parser'
-import { getCurrentWebstoreStatus } from './api/operationalStatus.js'
+import { getCurrentWebstoreOperationalState } from './api/operationalStatus.js'
 import { RedisStore } from 'connect-redis'
 import { createClient } from 'redis'
 
@@ -148,9 +148,10 @@ app.use((req, _res, next) => {
 
 app.use(async (_req, res, next) => {
     try {
-        const webstoreStatus = await getCurrentWebstoreStatus()
-        res.locals.webstoreStatus = webstoreStatus
-        res.locals.isWebstoreInMaintenance = webstoreStatus === 'MAINTENANCE'
+        const { status, message } = await getCurrentWebstoreOperationalState()
+        res.locals.webstoreStatus = status
+        res.locals.webstoreStatusMessage = message
+        res.locals.isWebstoreInMaintenance = status === 'MAINTENANCE'
         next()
     } catch (error) {
         next(error)
