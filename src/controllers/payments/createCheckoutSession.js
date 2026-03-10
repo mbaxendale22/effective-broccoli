@@ -171,8 +171,8 @@ export const createCheckoutSession = async (req, res) => {
                     },
                     display_name: 'Royal Mail Tracked 48',
                     delivery_estimate: {
-                        minimum: { unit: 'business_day', value: 3 },
-                        maximum: { unit: 'business_day', value: 5 },
+                        minimum: { unit: 'business_day', value: 2 },
+                        maximum: { unit: 'business_day', value: 3 },
                     },
                 },
             },
