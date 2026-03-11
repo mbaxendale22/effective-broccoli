@@ -1,6 +1,7 @@
 import { getCoffeesByStripePriceIds } from '../api/coffees.js'
 
 const ALLOWED_GRINDS = ['whole_beans', 'filter', 'espresso']
+const SHIPPING_COST_PENCE = 355
 
 const normalizeGrind = (grind) => {
     if (typeof grind !== 'string') {
@@ -13,6 +14,18 @@ const normalizeGrind = (grind) => {
 
 const getCartItemGrind = (cartItem) =>
     normalizeGrind(cartItem.grind) || 'whole_beans'
+
+const getItemizedTotals = (items) => {
+    const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0)
+    const shipping = items.length > 0 ? SHIPPING_COST_PENCE : 0
+    const total = subtotal + shipping
+
+    return {
+        subtotal,
+        shipping,
+        total,
+    }
+}
 
 export const addToCart = (req, res) => {
     const { coffeeId, grind } = req.body
@@ -74,7 +87,12 @@ export const renderCart = async (req, res) => {
     const cart = req.session.cart || []
 
     if (cart.length === 0) {
-        return res.render('cart', { items: [], total: 0 })
+        return res.render('cart', {
+            items: [],
+            subtotal: 0,
+            shipping: 0,
+            total: 0,
+        })
     }
 
     const coffeeIds = cart.map((item) => item.coffeeId)
@@ -103,16 +121,21 @@ export const renderCart = async (req, res) => {
         })
         .filter(Boolean)
 
-    const total = items.reduce((sum, item) => sum + item.lineTotal, 0)
+    const { subtotal, shipping, total } = getItemizedTotals(items)
 
-    res.render('cart', { items, total })
+    res.render('cart', { items, subtotal, shipping, total })
 }
 
 export const getCartData = async (req, res) => {
     const cart = req.session.cart || []
 
     if (cart.length === 0) {
-        return res.json({ items: [], total: 0 })
+        return res.json({
+            items: [],
+            subtotal: 0,
+            shipping: 0,
+            total: 0,
+        })
     }
 
     const coffeeIds = cart.map((item) => item.coffeeId)
@@ -141,9 +164,9 @@ export const getCartData = async (req, res) => {
         })
         .filter(Boolean)
 
-    const total = items.reduce((sum, item) => sum + item.lineTotal, 0)
+    const { subtotal, shipping, total } = getItemizedTotals(items)
 
-    res.json({ items, total })
+    res.json({ items, subtotal, shipping, total })
 }
 
 export const getCartCount = (req, res) => {

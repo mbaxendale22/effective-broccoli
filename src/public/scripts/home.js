@@ -81,6 +81,7 @@ async function fetchCartData() {
 function updateCartDisplay(data) {
     const cartContent = document.getElementById('cart-content')
     const cartFooter = document.querySelector('.cart-footer')
+    const fixedShippingPence = 355
 
     if (!cartContent || !cartFooter) return
 
@@ -111,8 +112,34 @@ function updateCartDisplay(data) {
 			`
         })
 
+        const computedSubtotal = data.items.reduce((sum, item) => {
+            const lineTotal = Number(item.lineTotal)
+            return sum + (Number.isFinite(lineTotal) ? lineTotal : 0)
+        }, 0)
+
+        const resolvedSubtotal = Number.isFinite(Number(data.subtotal))
+            ? Number(data.subtotal)
+            : computedSubtotal
+        const resolvedShipping = Number.isFinite(Number(data.shipping))
+            ? Number(data.shipping)
+            : fixedShippingPence
+        const resolvedTotal = resolvedSubtotal + resolvedShipping
+
         html += '</ul>'
-        html += `<div class="cart-total"><h3>Total: £${(data.total / 100).toFixed(2)}</h3></div>`
+        html += `
+            <div class="cart-total cart-summary-row">
+                <span>Subtotal</span>
+                <span>£${(resolvedSubtotal / 100).toFixed(2)}</span>
+            </div>
+            <div class="cart-total cart-summary-row">
+                <span>Shipping</span>
+                <span>£${(resolvedShipping / 100).toFixed(2)}</span>
+            </div>
+            <div class="cart-total cart-summary-row cart-summary-total">
+                <h3>Total</h3>
+                <h3>£${(resolvedTotal / 100).toFixed(2)}</h3>
+            </div>
+        `
         cartContent.innerHTML = html
         cartFooter.style.display = 'block'
     }

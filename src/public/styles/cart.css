@@ -179,6 +179,20 @@
     text-align: center;
 }
 
+.cart-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.cart-summary-total {
+    border-top: 1px solid #333;
+    padding-top: 12px;
+    margin-top: 14px;
+}
+
 .cart-total h3 {
     margin: 0;
     font-size: 1.25rem;
