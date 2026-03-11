@@ -15,6 +15,13 @@
     overflow-y: auto;
 }
 
+@media (max-width: 450px) {
+    .cart-drawer {
+        width: 100%;
+        right: -100%;
+    }
+}
+
 .cart-drawer.open {
     right: 0;
 }
