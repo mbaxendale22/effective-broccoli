@@ -177,6 +177,7 @@ export const createCheckoutSession = async (req, res) => {
                 },
             },
         ],
+        allow_promotion_codes: true,
         success_url: `${req.protocol}://${req.get('host')}/success`,
         cancel_url: `${req.protocol}://${req.get('host')}/`,
     })
