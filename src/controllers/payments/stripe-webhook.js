@@ -1,4 +1,5 @@
 import { stripe } from '../../config/stripe.js'
+import { sendOrderNotificationEmail } from '../../api/emails/orderNotification.js'
 import {
     getCoffeeRetailAvailabilityByStripeId,
     getCoffeesForWebhookByStripeIds,
@@ -45,6 +46,26 @@ const aggregateQuantitiesByCoffeeId = (items) =>
         acc[coffeeId] = (acc[coffeeId] || 0) + quantity
         return acc
     }, {})
+
+const normalizeAmount = (value) => {
+    const amount = Number(value)
+    return Number.isFinite(amount) ? amount : 0
+}
+
+const formatAddress = (address) => {
+    if (!address) {
+        return null
+    }
+
+    return {
+        line1: address.line1 || null,
+        line2: address.line2 || null,
+        city: address.city || null,
+        state: address.state || null,
+        postal_code: address.postal_code || null,
+        country: address.country || null,
+    }
+}
 
 const decrementRetailAvailability = async (quantitiesByCoffeeId) => {
     const coffeeIds = Object.keys(quantitiesByCoffeeId)
@@ -297,6 +318,44 @@ export const handleStripeWebhook = async (req, res) => {
                 }
 
                 await decrementRetailAvailability(quantitiesByCoffeeId)
+
+                const orderNotificationDetails = {
+                    orderId: order.id,
+                    stripeSessionId: session.id,
+                    stripePaymentIntentId: session.payment_intent,
+                    customerEmail:
+                        customerDetails?.email ||
+                        session.customer_email ||
+                        null,
+                    customerName: resolvedShippingName,
+                    shippingAddress: formatAddress(resolvedShippingAddress),
+                    currency: session.currency || order.currency || 'gbp',
+                    amounts: {
+                        subtotal: normalizeAmount(session.amount_subtotal),
+                        shipping: normalizeAmount(
+                            session.total_details?.amount_shipping
+                        ),
+                        total: normalizeAmount(session.amount_total),
+                    },
+                    lineItems: orderItemsToInsert.map((item) => ({
+                        name: item.name,
+                        stripePriceId: item.stripe_price_id,
+                        quantity: item.quantity,
+                        grind: item.grind,
+                        unitPrice: normalizeAmount(item.unit_price),
+                        lineTotal: normalizeAmount(item.line_total),
+                    })),
+                }
+
+                try {
+                    await sendOrderNotificationEmail(orderNotificationDetails)
+                } catch (emailError) {
+                    console.error('Failed to send order notification email:', {
+                        message: emailError?.message,
+                        orderId: order.id,
+                        stripeSessionId: session.id,
+                    })
+                }
             }
 
             console.log('Order saved to Supabase ☕')
@@ -305,7 +364,8 @@ export const handleStripeWebhook = async (req, res) => {
             return res.sendStatus(500)
         }
     }
-    // Send confirmation email
+    // Send confirmation email to me
+
     // Ship product
 
     res.json({ received: true })
