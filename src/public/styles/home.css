@@ -145,7 +145,7 @@ html {
     height: 100px;
     width: 100px;
     background-color: orange;
-    background-image: url('https://i.postimg.cc/d7Ym1jL8/logo.png');
+    background-image: url('/images/fourways_logo.svg');
     background-repeat: no-repeat;
     background-size: contain;
 }
