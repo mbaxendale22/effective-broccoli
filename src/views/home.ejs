@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/fourways_logo.svg" type="image/svg+xml">
     <title>
         <%= seo?.title || 'Fourways' %>
     </title>
@@ -18,7 +19,7 @@
     <script type="module" src="/scripts/productCard.js"></script>
 </head>
 
-<body>
+<body class="home-page">
     <%- include('partials/navbar') %>
         <main class="page-wrapper">
 
@@ -33,59 +34,7 @@
                     </p>
                     <% } %>
             </div>
-            <div class="product-cards__container">
 
-
-                <% coffees.forEach(item=> { %>
-                    <!-- product card -->
-                    <div class="product-card__container" id="product-card__container">
-                        <div class="product-card__left">
-                            <p class="product-card__price">
-                                £<%= item.price_250 / 100 %>
-                            </p>
-                            <div class="product-card__btn-container">
-                                <!-- take user to the product page -->
-                                <a href="/product/<%= item.stripe_price_id %>" class="modern-btn more-info-btn">More
-                                    info</a>
-                                <% if (!isWebstoreInMaintenance) { %>
-                                    <!-- run a js function to add to the cart session -->
-                                    <button data-id="<%= item.stripe_price_id %>" class="modern-btn add-to-cart-btn">Add
-                                        to
-                                        cart</button>
-                                    <% } %>
-                            </div>
-                        </div>
-                        <div class="product-card__right">
-                            <div class="product-card__text-container">
-                                <div class="product-card__origin" id="product-card__origin">
-                                    <p id="product-card__origin-text">
-                                        <%= item.origin %>
-                                    </p>
-                                </div>
-                                <div class="product-card__process" id="product-card__process">
-                                    <p id="product-card__process-text">
-                                        <%= item.process %>
-                                    </p>
-                                </div>
-                                <div class="product-card__producer" id="product-card__producer">
-                                    <p id="product-card__producer-text">
-                                        <%= item.producer %>
-                                    </p>
-                                </div>
-                                <div class="product-card__variety" id="product-card__variety">
-                                    <p id="product-card__variety-text">
-                                        <%= item.variety %>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="product-card__logo-container">
-                                <div class="product-card__logo"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <% }) %>
-            </div>
 
             <% if (!isWebstoreInMaintenance) { %>
                 <!-- Cart Drawer -->

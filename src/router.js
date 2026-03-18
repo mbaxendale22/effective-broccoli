@@ -13,7 +13,7 @@ import {
     updateCartItem,
     removeFromCart,
 } from './controllers/cart.js'
-import { renderHome } from './controllers/home.js'
+import { renderAllCoffees, renderHome } from './controllers/home.js'
 import { renderProductDetails } from './controllers/product.js'
 import { login, logout, renderLogin } from './controllers/auth.js'
 import {
@@ -76,6 +76,7 @@ ${urlItems}
 })
 
 router.route('/').get(renderHome)
+router.route('/coffees').get(renderAllCoffees)
 router.route('/about').get((req, res) => {
     res.render('about', {
         seo: {

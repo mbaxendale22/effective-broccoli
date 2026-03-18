@@ -6,47 +6,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/images/fourways_logo.svg" type="image/svg+xml">
     <title>
-        <%= seo?.title || 'Product Details - Fourways' %>
+        <%= seo?.title || 'All Coffees - Fourways' %>
     </title>
-    <meta name="description" content="<%= seo?.description || 'Small-batch specialty coffee from Fourways.' %>">
+    <meta name="description" content="<%= seo?.description || 'Browse all Fourways coffees.' %>">
     <link rel="canonical" href="<%= seo?.canonicalUrl %>">
     <meta name="robots" content="<%= seo?.robots || 'index,follow' %>">
     <link href="/styles/home.css" rel="stylesheet">
     <link href="/styles/navbar.css" rel="stylesheet">
     <link href="/styles/cart.css" rel="stylesheet">
     <link href="/styles/footer.css" rel="stylesheet">
-    <script type="module" src="/scripts/home.js" defer></script>
+    <script type="module" src="/scripts/home.js"></script>
     <script type="module" src="/scripts/productCard.js"></script>
-
 </head>
 
-<body>
+<body class="home-page">
     <%- include('partials/navbar') %>
         <main class="page-wrapper">
 
-            <div class="product-details__container">
-                <div class="product-cards__container">
+            <div class="header__container">
+                <h1 class="headline-text">All Coffees</h1>
+            </div>
+            <div class="product-cards__container">
+
+
+                <% coffees.forEach(item=> { %>
                     <!-- product card -->
-                    <div class="product-card__container product-details__product-card-container"
-                        id="product-card__container">
-                        <div class="product-details__product-card__left">
-                            <% const availableBags=Number.isInteger(item.retail_available) ? item.retail_available : 0;
-                                %>
-                                <% const canPurchaseRetail=availableBags> 0 && !isWebstoreInMaintenance; %>
-                                    <p class="product-card__stock">
-                                        <%= isWebstoreInMaintenance ? 'Temporarily unavailable during maintenance' :
-                                            canPurchaseRetail ? `${availableBags} bags left` : 'Out of stock' %>
-                                    </p>
-                                    <p class="product-card__price">
-                                        £<%= item.price_250 / 100 %>
-                                    </p>
-                                    <div class="product-card__btn-container">
-                                        <!-- run a js function to add to the cart session -->
-                                        <button data-id="<%= item.stripe_price_id %>" class="modern-btn add-to-cart-btn"
-                                            <%=canPurchaseRetail ? '' : 'disabled' %>>
-                                            <%= canPurchaseRetail ? 'Add to cart' : 'Unavailable' %>
-                                        </button>
-                                    </div>
+                    <div class="product-card__container" id="product-card__container">
+                        <div class="product-card__left">
+                            <p class="product-card__price">
+                                £<%= item.price_250 / 100 %>
+                            </p>
+                            <div class="product-card__btn-container">
+                                <!-- take user to the product page -->
+                                <a href="/product/<%= item.stripe_price_id %>" class="modern-btn more-info-btn">More
+                                    info</a>
+                                <% if (!isWebstoreInMaintenance) { %>
+                                    <!-- run a js function to add to the cart session -->
+                                    <button data-id="<%= item.stripe_price_id %>" class="modern-btn add-to-cart-btn">Add
+                                        to
+                                        cart</button>
+                                    <% } %>
+                            </div>
                         </div>
                         <div class="product-card__right">
                             <div class="product-card__text-container">
@@ -70,46 +70,18 @@
                                         <%= item.variety %>
                                     </p>
                                 </div>
-
                             </div>
                             <div class="product-card__logo-container">
                                 <div class="product-card__logo"></div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    <% }) %>
             </div>
-            <section class="product-details__main-text">
-                <h2>What do you need to know</h2>
-                <p>
-                    <%= item.description_summary %>
-                </p>
 
-                <h2>The process</h2>
-                <p>
-                    <%= item.description_process %>
-                </p>
-
-                <h2>The producer</h2>
-                <p>
-                    <%= item.description_producer %>
-                </p>
-
-                <h2>The cultivars</h2>
-                <p>
-                    <%= item.description_cultivars %>
-                </p>
-
-                <h2>Any other business</h2>
-                <p>
-                    <%= item.description_other %>
-                </p>
-
-            </section>
-
-
-            <!-- Cart Drawer -->
             <% if (!isWebstoreInMaintenance) { %>
+                <!-- Cart Drawer -->
                 <%- include('cart') %>
                     <%- include('partials/grind-modal') %>
 
@@ -118,6 +90,7 @@
                         <% } %>
         </main>
         <%- include('partials/footer') %>
+
 </body>
 
 </html>

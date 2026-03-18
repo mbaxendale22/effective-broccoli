@@ -3,6 +3,10 @@ const cartToggle = document.getElementById('cart-toggle')
 const cartDrawer = document.getElementById('cart-drawer')
 const cartOverlay = document.getElementById('cart-overlay')
 const closeCartBtn = document.getElementById('close-cart')
+const menuToggle = document.getElementById('menu-toggle')
+const siteMenuDrawer = document.getElementById('site-menu-drawer')
+const siteMenuOverlay = document.getElementById('site-menu-overlay')
+const siteMenuClose = document.getElementById('site-menu-close')
 const grindModal = document.getElementById('grind-modal')
 const grindModalOverlay = document.getElementById('grind-modal-overlay')
 const closeGrindModalBtn = document.getElementById('close-grind-modal')
@@ -29,6 +33,41 @@ function toggleCart() {
     if (cartDrawer.classList.contains('open')) {
         fetchCartData()
     }
+}
+
+function openSiteMenu() {
+    if (!siteMenuDrawer || !siteMenuOverlay) return
+
+    siteMenuDrawer.classList.add('open')
+    siteMenuOverlay.classList.add('active')
+    document.body.classList.add('body-no-scroll')
+
+    if (menuToggle) {
+        menuToggle.setAttribute('aria-expanded', 'true')
+    }
+}
+
+function closeSiteMenu() {
+    if (!siteMenuDrawer || !siteMenuOverlay) return
+
+    siteMenuDrawer.classList.remove('open')
+    siteMenuOverlay.classList.remove('active')
+    document.body.classList.remove('body-no-scroll')
+
+    if (menuToggle) {
+        menuToggle.setAttribute('aria-expanded', 'false')
+    }
+}
+
+function toggleSiteMenu() {
+    if (!siteMenuDrawer) return
+
+    if (siteMenuDrawer.classList.contains('open')) {
+        closeSiteMenu()
+        return
+    }
+
+    openSiteMenu()
 }
 
 function openGrindModal(coffeeId) {
@@ -171,6 +210,28 @@ if (cartOverlay) {
     cartOverlay.addEventListener('click', toggleCart)
 }
 
+if (menuToggle) {
+    menuToggle.addEventListener('click', toggleSiteMenu)
+}
+
+if (siteMenuClose) {
+    siteMenuClose.addEventListener('click', closeSiteMenu)
+}
+
+if (siteMenuOverlay) {
+    siteMenuOverlay.addEventListener('click', closeSiteMenu)
+}
+
+document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') {
+        return
+    }
+
+    if (siteMenuDrawer?.classList.contains('open')) {
+        closeSiteMenu()
+    }
+})
+
 if (closeGrindModalBtn) {
     closeGrindModalBtn.addEventListener('click', closeGrindModal)
 }
@@ -200,6 +261,11 @@ grindOptionButtons.forEach((button) => {
 })
 
 document.addEventListener('click', async (e) => {
+    if (e.target.closest('#site-menu-drawer a')) {
+        closeSiteMenu()
+        return
+    }
+
     if (e.target.classList.contains('add-to-cart-btn')) {
         const coffeeId = e.target.dataset.id
 
