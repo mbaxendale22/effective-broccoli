@@ -15,6 +15,11 @@
     <link href="/styles/navbar.css" rel="stylesheet">
     <link href="/styles/cart.css" rel="stylesheet">
     <link href="/styles/footer.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Comfortaa:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
     <script type="module" src="/scripts/home.js" defer></script>
 </head>
 
@@ -23,7 +28,7 @@
         <main class="page-wrapper">
 
             <div class="header__container">
-                <h1>About Fourways Coffee Roasters</h1>
+                <h1 class="headline-text">About Fourways Coffee Roasters</h1>
             </div>
             <p class="text-light">Fourways is a nano-roastery. It is owned and operated by a single person - Matthew
                 - and all coffee
@@ -38,24 +43,28 @@
                 present through connecting with his past.</p>
 
             <div class="header__container">
-                <h2>Shipping</h2>
+                <h2 class="headline-text">Shipping</h2>
             </div>
             <p class="text-light">Currently there is only one shipping option available - Royal Mail 48hrs tracked and
                 is a fixed price
                 of £3.55
                 up to 2kg. Shipping options will be expanded in the future but for now it helps keeps operations
                 manageable.</p>
+            <div class="header__container">
+                <h2 class="headline-text">Sizes</h2>
+            </div>
+            <p class="text-light">All bags are 250g. 1kg options are coming soon!</p>
 
 
             <div class="header__container">
-                <h2>Contact</h2>
+                <h2 class="headline-text">Contact</h2>
             </div>
             <p class="text-light">You can reach out by email at <a class="success-email__link"
                     href="mailto:orders@fourways.coffee">orders@fourways.coffee</a> or through our <a
                     class="success-email__link" href="https://www.instagram.com/fourwayscoffee"
                     target="_blank">Instagram</a>
                 page where you can also keep up to date on new releases, events,
-                and news</p>
+                and news.</p>
 
             <% if (!isWebstoreInMaintenance) { %>
                 <%- include('cart') %>
