@@ -13,6 +13,7 @@ const closeGrindModalBtn = document.getElementById('close-grind-modal')
 const grindOptionButtons = Array.from(
     document.querySelectorAll('.grind-option-btn')
 )
+const collaborationFlipCard = document.getElementById('collaboration-flip-card')
 
 const navLinks = Array.from(document.querySelectorAll('[data-nav-route]'))
 const currentPath = window.location.pathname
@@ -238,6 +239,26 @@ if (closeGrindModalBtn) {
 
 if (grindModalOverlay) {
     grindModalOverlay.addEventListener('click', closeGrindModal)
+}
+
+function toggleCollaborationFlipCard() {
+    if (!collaborationFlipCard) return
+
+    collaborationFlipCard.classList.toggle('is-flipped')
+    collaborationFlipCard.setAttribute(
+        'aria-pressed',
+        String(collaborationFlipCard.classList.contains('is-flipped'))
+    )
+}
+
+if (collaborationFlipCard) {
+    collaborationFlipCard.addEventListener('click', toggleCollaborationFlipCard)
+    collaborationFlipCard.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            toggleCollaborationFlipCard()
+        }
+    })
 }
 
 grindOptionButtons.forEach((button) => {

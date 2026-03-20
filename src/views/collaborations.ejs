@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/fourways_logo.svg" type="image/svg+xml">
+    <title>
+        <%= seo?.title || 'Collaborations - Fourways' %>
+    </title>
+    <meta name="description" content="<%= seo?.description || 'Collaborations by Fourways Coffee Roasters.' %>">
+    <link rel="canonical" href="<%= seo?.canonicalUrl %>">
+    <meta name="robots" content="<%= seo?.robots || 'index,follow' %>">
+    <link href="/styles/home.css" rel="stylesheet">
+    <link href="/styles/navbar.css" rel="stylesheet">
+    <link href="/styles/cart.css" rel="stylesheet">
+    <link href="/styles/footer.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Comfortaa:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <script type="module" src="/scripts/home.js" defer></script>
+</head>
+
+<body>
+    <%- include('partials/navbar') %>
+        <main class="page-wrapper">
+            <div class="header__container">
+                <h1 class="headline-text">Collaborations</h1>
+            </div>
+
+            <p class="text-light">Updates on collaborative coffees, projects, and events will be shared here.</p>
+
+            <section class="collaboration-flip-card" id="collaboration-flip-card" role="button" tabindex="0"
+                aria-label="Flip card for The Twisted Sister details" aria-pressed="false">
+                <div class="collaboration-flip-card__inner">
+                    <div class="collaboration-flip-card__face collaboration-flip-card__face--front">
+                        <h2 class="headline-text text-light collaboration-hero__title">The Twisted Sister</h2>
+                        <h3 class="headline-text text-light collaboration-hero__title">Clapham Junction SW11</h3>
+                    </div>
+                    <div class="collaboration-flip-card__face collaboration-flip-card__face--back">
+                        <h2 class="headline-text text-light collaboration-hero__title">The Twisted Sister</h2>
+                        <p class="text-light collaboration-flip-card__text">
+
+                        </p>
+
+                    </div>
+                </div>
+            </section>
+
+
+            <% if (!isWebstoreInMaintenance) { %>
+                <%- include('cart') %>
+                    <div id="cart-overlay" class="cart-overlay"></div>
+                    <% } %>
+        </main>
+        <%- include('partials/footer') %>
+</body>
+
+</html>

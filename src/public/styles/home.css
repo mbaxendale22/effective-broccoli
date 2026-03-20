@@ -26,7 +26,7 @@ body {
 
 body.home-page {
     background-image:
-        linear-gradient(rgba(28, 28, 30, 0.82), rgba(28, 28, 30, 0.82)),
+        linear-gradient(rgba(28, 28, 30, 0.9), rgba(28, 28, 30, 0.9)),
         url('/images/fourways_logo.svg');
     background-repeat: no-repeat;
     background-size: cover;
@@ -55,6 +55,119 @@ body.home-page {
     margin: 0 auto;
     padding: 1rem 1rem 2rem 1rem;
     flex: 1;
+}
+
+.home-hero-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-hero-wrapper .header__container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.collaboration-flip-card {
+    width: 100%;
+    min-height: 320px;
+    margin-top: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    perspective: 1200px;
+    cursor: pointer;
+}
+
+.collaboration-flip-card:focus-visible {
+    outline: 2px solid var(--primary-light);
+    outline-offset: 3px;
+}
+
+.collaboration-flip-card__inner {
+    position: relative;
+    width: 100%;
+    min-height: 320px;
+    border-radius: 8px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+}
+
+.collaboration-flip-card.is-flipped .collaboration-flip-card__inner {
+    transform: rotateY(180deg);
+}
+
+.collaboration-flip-card__face {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    box-sizing: border-box;
+    backface-visibility: hidden;
+}
+
+.collaboration-flip-card__face--front {
+    background-image:
+        linear-gradient(rgba(28, 28, 30, 0.62), rgba(28, 28, 30, 0.62)),
+        url('/images/ts-shopfront.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.collaboration-flip-card__face--back {
+    background-image:
+        linear-gradient(rgba(28, 28, 30, 0.78), rgba(28, 28, 30, 0.78)),
+        url('/images/ts-interior.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    transform: rotateY(180deg);
+}
+
+.collaboration-hero__title {
+    margin: 0;
+}
+
+.collaboration-flip-card__text {
+    margin: 0.35rem 0;
+    max-width: 540px;
+}
+
+.main-page__links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.hero-text {
+    font-size: 2.5rem;
+    text-align: center;
+    padding-bottom: 4rem;
+}
+
+.hero-btn {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    text-decoration: none;
+    border-radius: 16px;
+    a {
+        color: var(--primary-dark);
+        text-decoration: none;
+    }
 }
 
 .product-cards__container {

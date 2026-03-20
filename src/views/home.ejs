@@ -26,13 +26,14 @@
 
 <body class="home-page">
     <%- include('partials/navbar') %>
-        <main class="page-wrapper">
+        <main class="page-wrapper home-hero-wrapper">
 
             <div class="header__container">
-                <!-- <h1 class="headline-text">Fourways Coffee Roasters</h1> -->
-                <p>Fourways is a nano-roastery that puts out limited releases and roasts in small batches. Check out our
-                    latest
-                    releases below:</p>
+                <h1 class="headline-text hero-text">Welcome to Fourways</h1>
+                <ul class="main-page__links">
+                    <li class="hero-btn"><a href="/coffees">Shop All Coffees</a></li>
+                </ul>
+
                 <% if (webstoreStatusMessage) { %>
                     <p>
                         <%= webstoreStatusMessage %>

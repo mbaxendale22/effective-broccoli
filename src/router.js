@@ -49,7 +49,13 @@ router.route('/sitemap.xml').get(async (req, res, next) => {
         const nowIso = new Date().toISOString()
         const coffees = await getAllActiveCoffees()
 
-        const staticPaths = ['/', '/about', '/privacy-policy']
+        const staticPaths = [
+            '/',
+            '/coffees',
+            '/about',
+            '/collaborations',
+            '/privacy-policy',
+        ]
         const productPaths = coffees.map(
             (coffee) => `/product/${encodeURIComponent(coffee.stripe_price_id)}`
         )
@@ -84,6 +90,16 @@ router.route('/about').get((req, res) => {
             title: 'About Fourways Coffee Roasters',
             description:
                 'Learn about Fourways Coffee Roasters, our approach to small-batch roasting, and how to get in touch.',
+        },
+    })
+})
+router.route('/collaborations').get((req, res) => {
+    res.render('collaborations', {
+        seo: {
+            ...res.locals.seo,
+            title: 'Collaborations | Fourways Coffee Roasters',
+            description:
+                'Discover collaborative coffees, projects, and events from Fourways Coffee Roasters.',
         },
     })
 })
