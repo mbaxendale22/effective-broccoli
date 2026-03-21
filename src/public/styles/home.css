@@ -134,6 +134,8 @@ body.home-page {
 
 .collaboration-hero__title {
     margin: 0;
+    padding-bottom: 1rem;
+    font-size: 1.75rem;
 }
 
 .collaboration-flip-card__text {
