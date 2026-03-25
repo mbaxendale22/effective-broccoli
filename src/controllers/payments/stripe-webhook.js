@@ -346,16 +346,17 @@ export const handleStripeWebhook = async (req, res) => {
                         lineTotal: normalizeAmount(item.line_total),
                     })),
                 }
+                //! removing this for production for now, need to reconfigure email service before pushing
 
-                try {
-                    await sendOrderNotificationEmail(orderNotificationDetails)
-                } catch (emailError) {
-                    console.error('Failed to send order notification email:', {
-                        message: emailError?.message,
-                        orderId: order.id,
-                        stripeSessionId: session.id,
-                    })
-                }
+                // try {
+                //     await sendOrderNotificationEmail(orderNotificationDetails)
+                // } catch (emailError) {
+                //     console.error('Failed to send order notification email:', {
+                //         message: emailError?.message,
+                //         orderId: order.id,
+                //         stripeSessionId: session.id,
+                //     })
+                // }
             }
 
             console.log('Order saved to Supabase ☕')
